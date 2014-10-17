@@ -1,4 +1,19 @@
+<<<<<<< HEAD
 .classpath
 CommonMark-Java-Src/.settings
 CommonMark-Java-Src/bin
 .project
+=======
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+>>>>>>> 7a1c8f47c44865c0de28ff917b9b6286b90d4d6d

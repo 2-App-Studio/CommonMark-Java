@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import com.jotterpad.commonmark.object.Block;
 import com.jotterpad.commonmark.object.BlocksContent;
 import com.jotterpad.commonmark.object.Delim;
+import com.jotterpad.commonmark.object.RefMapItem;
 import com.jotterpad.commonmark.object.StringContent;
 import com.jotterpad.commonmark.pattern.RegexPattern;
 
@@ -15,14 +16,14 @@ public class InlineParser {
 
 	private String _subject;
 	private int _labelNestLevel, _pos;
-	private HashMap<String, String> _refMap;
+	private HashMap<String, RefMapItem> _refMap;
 	private RegexPattern _regex;
 
 	public InlineParser() {
 		_subject = "";
 		_labelNestLevel = 0;
 		_pos = 0;
-		_refMap = new HashMap<String, String>();
+		_refMap = new HashMap<String, RefMapItem>();
 		_regex = RegexPattern.getInstance();
 	}
 
@@ -424,32 +425,192 @@ public class InlineParser {
 
 	// STUB
 	public int parseLink(ArrayList<Block> inlines) {
+		int startPos = _pos;
+		int n = parseLinkLabel();
+
+		if (n == 0) {
+			return 0;
+		}
+
+		int afterLabel = _pos;
+		String rawLabel = _subject.substring(startPos, startPos + n);
+
+		if (peek() == '(') {
+			_pos++;
+			if (spnl()) {
+				String dest = parseLinkDestination();
+				if (dest != null && spnl()) {
+					// TODO:
+					// if re.match...
+					// else
+					// if spnl()
+					// else
+					// ...
+				} else {
+					_pos = startPos;
+					return 0;
+				}
+			} else {
+				_pos = startPos;
+				return 0;
+			}
+		}
+
+		int savePos = _pos;
+		spnl();
+		int beforelabel = _pos;
+		n = parseLinkLabel();
+		String refLabel = "";
+		if (n == 2) {
+			refLabel = rawLabel;
+		} else if (n > 0) {
+			refLabel = _subject.substring(beforelabel, beforelabel + n);
+		} else {
+			_pos = savePos;
+			refLabel = rawLabel;
+		}
+
+		String normalizedRefLabel = _regex.normalizeReference(refLabel);
+		RefMapItem link;
+		if (_refMap.containsKey(normalizedRefLabel)) {
+			link = _refMap.get(normalizedRefLabel);
+		} else {
+			link = null;
+		}
+		if (link != null) {
+			// TODO:
+			// if link.get...
+			// return _pos - startPos
+		} else {
+			_pos = startPos;
+			return 0;
+		}
+
+		_pos = startPos;
 		return 0;
+
 	}
 
-	// STUB
 	public int parseEntity(ArrayList<Block> inlines) {
-		return 0;
+		// Originally Literal String
+		String m = match(
+				"^&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});",
+				Pattern.CASE_INSENSITIVE);
+		if (m != null) {
+			inlines.add(Block.makeBlock("Entity", new StringContent(m)));
+			return m.length();
+		} else {
+			return 0;
+		}
 	}
 
-	// STUB
 	public int parseString(ArrayList<Block> inlines) {
-		return 0;
+		String m = match(RegexPattern.reMain_LITERAL, Pattern.MULTILINE);
+		if (m != null) {
+			inlines.add(Block.makeBlock("Str", new StringContent(m)));
+			return m.length();
+		} else {
+			return 0;
+		}
 	}
 
-	// STUB
 	public int parseNewLine(ArrayList<Block> inlines) {
-		return 0;
+		if (peek() == '\n') {
+			_pos++;
+			Block last = inlines.get(inlines.size() - 1);
+			if (last != null && last.getTag().equals("Str")) {
+				String content = ((StringContent) last.getC()).getContent();
+				if (content.substring(content.length() - 2, content.length())
+						.equals("  ")) {
+					// Originally Literal String
+					String replaceTo = content.replaceAll(" *$", "");
+					last.setC(new StringContent(replaceTo));
+					inlines.add(Block.makeBlock("Hardbreak"));
+				} else if (content.substring(content.length() - 1,
+						content.length()).equals(" ")) {
+					last.setC(new StringContent(content.substring(0,
+							content.length() - 1)));
+					inlines.add(Block.makeBlock("Softbreak"));
+				} else {
+					inlines.add(Block.makeBlock("Softbreak"));
+				}
+			} else {
+				inlines.add(Block.makeBlock("Softbreak"));
+			}
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 
-	// STUB
 	public int parseImage(ArrayList<Block> inlines) {
-		return 0;
+		if (match("^!") != null) {
+			int n = parseLink(inlines);
+			if (n == 0) {
+				inlines.add(Block.makeBlock("Str", new StringContent("!")));
+				return 1;
+				// TODO: Need help
+			} else if (inlines.get(inlines.size() - 1) != null
+					&& inlines.get(inlines.size() - 1).getTag().equals("Link")) {
+				inlines.get(inlines.size() - 1).setTag("Image");
+				return n + 1;
+			} else {
+				throw new RuntimeException("Shouldn't happen");
+			}
+		} else {
+			return 0;
+		}
 	}
 
-	// STUB
-	public int parseReference(String s, HashMap<String, String> refMap) {
-		return 0;
+	public int parseReference(String s, HashMap<String, RefMapItem> refMap) {
+		_subject = s;
+		_pos = 0;
+		int startPos = _pos;
+		String rawLabel = "";
+
+		int matchChars = parseLinkLabel();
+		if (matchChars == 0) {
+			return 0;
+		} else {
+			rawLabel = _subject.substring(0, matchChars);
+		}
+
+		char test = peek();
+		if (test == ':') {
+			_pos++;
+		} else {
+			_pos = startPos;
+			return 0;
+		}
+
+		spnl();
+
+		String dest = parseLinkDestination();
+		if (dest == null || dest.length() == 0) {
+			_pos = startPos;
+			return 0;
+		}
+
+		int beforeTitle = _pos;
+		spnl();
+		String title = parseLinkTitle();
+		if (title == null) {
+			title = "";
+			_pos = beforeTitle;
+		}
+
+		// Originally Literal String
+		if (match("^ *(?:\\n|$)") == null) {
+			_pos = startPos;
+			return 0;
+		}
+
+		String normLabel = _regex.normalizeReference(rawLabel);
+		if (!refMap.containsKey(normLabel)) {
+			refMap.put(normLabel, new RefMapItem(dest, title));
+		}
+
+		return _pos - startPos;
 	}
 
 	public int parseInline(ArrayList<Block> inlines) {
@@ -495,7 +656,7 @@ public class InlineParser {
 	}
 
 	public ArrayList<Block> parseInlines(String s,
-			HashMap<String, String> refMap) {
+			HashMap<String, RefMapItem> refMap) {
 		_subject = s;
 		_pos = 0;
 		_refMap = refMap;
@@ -508,12 +669,12 @@ public class InlineParser {
 		return inlines;
 	}
 
-	public ArrayList<Block> parse(String s, HashMap<String, String> refMap) {
+	public ArrayList<Block> parse(String s, HashMap<String, RefMapItem> refMap) {
 		return parseInlines(s, refMap);
 	}
 
 	public ArrayList<Block> parse(String s) {
-		HashMap<String, String> refMap = new HashMap<String, String>();
+		HashMap<String, RefMapItem> refMap = new HashMap<String, RefMapItem>();
 		return parseInlines(s, refMap);
 	}
 }

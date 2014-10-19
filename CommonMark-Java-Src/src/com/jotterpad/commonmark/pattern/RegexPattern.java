@@ -4,8 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexPattern {
-
-	public static final String ESCAPABLE = "[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]";
+	
+	public static final String ESCAPABLE = "[!\"#$%&\'()*+,./:;<=>?@\\[\\\\\\]^_`{|}~-]";
 	public static final String ESCAPED_CHAR = "\\\\" + ESCAPABLE;
 	public static final String IN_DOUBLE_QUOTES = "\"(" + ESCAPED_CHAR
 			+ "|[^\"\\x00])*\"";
@@ -55,16 +55,17 @@ public class RegexPattern {
 	private RegexPattern() {
 		_htmlTag = Pattern.compile('^' + HTMLTAG, Pattern.CASE_INSENSITIVE);
 		_htmlBlockOpen = Pattern.compile('^' + HTMLBLOCKOPEN,
-				Pattern.CASE_INSENSITIVE);
+				Pattern.CASE_INSENSITIVE);		
+		_escapable = Pattern.compile(ESCAPABLE);
+
 		_linkTitle = Pattern.compile("^(?:\"(" + ESCAPED_CHAR
 				+ "|[^\"\\x00])*\"" + "|" + "'(" + ESCAPED_CHAR
 				+ "|[^'\\x00])*'" + "|" + "\\((" + ESCAPED_CHAR
-				+ "|[^)\\x00])*\\))");
+			+ "|[^)\\x00])*\\))");
 		_linkDestinationBraces = Pattern.compile("^(?:[<](?:[^<>\\n\\\\\\x00]"
 				+ "|" + ESCAPED_CHAR + "|" + "\\\\)*[>])");
 		_linkDestination = Pattern.compile("^(?:" + REG_CHAR + "+|"
 				+ ESCAPED_CHAR + "|" + IN_PARENS_NOSP + ")*");
-		_escapable = Pattern.compile(ESCAPABLE);
 		_escapedChar = Pattern.compile("^\\\\(" + ESCAPABLE + ")");
 		_allTab = Pattern.compile("\t");
 		_hRule_LITERAL = Pattern

@@ -1,9 +1,8 @@
 package com.jotterpad.commonmark.object;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class Block {
+public class Block implements Cloneable{
 
 	// TODO: Data types still not confirmed
 	private String _tag, _destination, _stringContent, _title, _info;
@@ -17,6 +16,11 @@ public class Block {
 
 	private int _fenceOffset, _fenceLength, _level;
 	private char _fenceChar;
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 	private Block(String tag, Content c, String destination,
 			ArrayList<Block> label, int startLine, int startColumn, String title) {

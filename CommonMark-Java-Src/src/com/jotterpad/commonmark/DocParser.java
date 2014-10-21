@@ -1,7 +1,6 @@
 package com.jotterpad.commonmark;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +25,15 @@ public class DocParser {
 		_doc = Block.makeBlock("Document", 1, 1);
 		_subject = subject;
 		_pos = pos;
+		_tip = Block.makeBlock("Document", 1, 1);
+		_refMap = new HashMap<String, RefMapItem>();
+		_inlineParser = new InlineParser();
+	}
+
+	public DocParser() {
+		_doc = Block.makeBlock("Document", 1, 1);
+		_subject = null;
+		_pos = 0;
 		_tip = Block.makeBlock("Document", 1, 1);
 		_refMap = new HashMap<String, RefMapItem>();
 		_inlineParser = new InlineParser();
@@ -69,6 +77,7 @@ public class DocParser {
 			}
 
 			finalize(lastList, lineNumber);
+
 			_tip = lastList.getParent();
 		}
 	}
@@ -92,6 +101,7 @@ public class DocParser {
 		_tip.getChildren().add(newBlock);
 		newBlock.setPrent(_tip);
 		_tip = newBlock;
+
 		return newBlock;
 	}
 
@@ -442,12 +452,14 @@ public class DocParser {
 
 	private void closeUnmatchedBlocks(Boolean alreadyDone, Block oldTip,
 			int lineNumber, Block lastMatchedContainer) {
-		finalize(oldTip, lineNumber);
-		oldTip = oldTip.getParent();
+		while (!alreadyDone && !oldTip.equals(lastMatchedContainer)) {
+			finalize(oldTip, lineNumber);
+			oldTip = oldTip.getParent();
+		}
 		alreadyDone = true;
+
 	}
 
-	// STUB
 	private void finalize(Block block, int lineNumber) {
 		if (!block.isOpen()) {
 			return;
@@ -461,7 +473,6 @@ public class DocParser {
 		}
 
 		if (block.getTag().equals("Paragraph")) {
-			// ...
 			block.setStringContent("");
 			ArrayList<String> lines = block.getStrings();
 			for (int i = 0; i < lines.size(); i++) {
@@ -469,18 +480,70 @@ public class DocParser {
 				lines.set(i, Pattern.compile("^  *", Pattern.MULTILINE)
 						.matcher(line).replaceAll(""));
 			}
-			block.setStringContent(CollectionUtils.join("\n", block.getStrings()));
-			// LINE 1133
+			block.setStringContent(CollectionUtils.join(block.getStrings(),
+					"\n"));
+
+			int pos = _inlineParser.parseReference(block.getStringContent(),
+					_refMap);
+
+			while (block.getStringContent().length() > 0
+					&& block.getStringContent().charAt(0) == '[' && pos != 0) {
+				block.setStringContent(block.getStringContent().substring(pos));
+				if (RegexPattern.getInstance()
+						.isBlank(block.getStringContent())) {
+					block.setTag("ReferenceDef");
+					break;
+				}
+				pos = _inlineParser.parseReference(block.getStringContent(),
+						_refMap);
+			}
 		} else if (block.getTag().equals("ATXHeader")
 				|| block.getTag().equals("SetextHeader")
 				|| block.getTag().equals("HorizontalRule")) {
-			// ...
+			block.setStringContent(CollectionUtils.join(block.getStrings(),
+					"\n"));
 		} else if (block.getTag().equals("IndentedCode")) {
-			// ...
+			String joinedString = CollectionUtils
+					.join(block.getStrings(), "\n");
+			// Regex Literal String
+			joinedString = joinedString.replaceAll("(\\n *)*$", "\n");
+			block.setStringContent(joinedString);
 		} else if (block.getTag().equals("FencedCode")) {
-			// ...
+			block.setInfo(RegexPattern.getInstance().getUnescape(
+					block.getStrings().get(0).trim()));
+			if (block.getStrings().size() == 1) {
+				block.setStringContent("");
+			} else {
+				block.setStringContent(CollectionUtils.join(block.getStrings(),
+						"\n"));
+			}
 		} else if (block.getTag().equals("List")) {
-			// ...
+			block.setTight(true);
+
+			int numItems = block.getChildren().size();
+			int i = 0;
+
+			while (i < numItems) {
+				Block item = block.getChildren().get(i);
+				boolean isLastItem = (i == numItems - 1);
+				if (endsWithBlankLine(item) && !isLastItem) {
+					block.setTight(false);
+					break;
+				}
+				int numSubItems = item.getChildren().size();
+				int j = 0;
+				while (j < numSubItems) {
+					Block subItem = item.getChildren().get(j);
+					boolean isLastSubItem = j == (numSubItems - 1);
+					if (endsWithBlankLine(subItem)
+							&& !(isLastItem && isLastSubItem)) {
+						block.setTight(false);
+						break;
+					}
+					j++;
+				}
+				i++;
+			}
 		} else {
 
 		}
@@ -504,17 +567,22 @@ public class DocParser {
 		}
 	}
 
-	private Block parse(String input) {
+	public Block parse(String input) {
 		_doc = Block.makeBlock("Document", 1, 1);
 		_tip = _doc;
 		_refMap = new HashMap<String, RefMapItem>();
 
+		
+		
 		// Regex Literal String
 		String tempInput = input.replaceAll("\\n$", "");
 		String[] lines = Pattern.compile("\\r\\n|\\n|\\r").split(tempInput);
 		for (int i = 0; i < lines.length; i++) {
+			System.out.println("@" + i + ": " + _tip.getTag());
 			incorporateLine(lines[i], i + 1);
 		}
+
+		System.out.println("@DONE");
 
 		while (_tip != null) {
 			finalize(_tip, lines.length - 1);

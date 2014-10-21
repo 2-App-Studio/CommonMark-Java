@@ -362,7 +362,7 @@ public class InlineParser {
 	}
 
 	public int parseLinkLabel() {
-		if (peek() != '[') {
+		if (peek() == null || peek() != '[') {
 			return 0;
 		}
 

@@ -440,12 +440,22 @@ public class InlineParser {
 			if (spnl()) {
 				String dest = parseLinkDestination();
 				if (dest != null && spnl()) {
-					// TODO:
-					// if re.match...
-					// else
-					// if spnl()
-					// else
-					// ...
+					String title = "";
+					if (Pattern.matches("^\\s",
+							String.valueOf(_subject.charAt(_pos - 1)))) {
+						title = parseLinkTitle();
+					} else {
+						title = "";
+					}
+
+					if (spnl() && match("^\\)") != null) {
+						inlines.add(Block.makeBlock("Link", dest, title,
+								parseRawLabel(rawLabel)));
+						return _pos - startPos;
+					} else {
+						_pos = startPos;
+						return 0;
+					}
 				} else {
 					_pos = startPos;
 					return 0;
@@ -477,18 +487,28 @@ public class InlineParser {
 		} else {
 			link = null;
 		}
+
 		if (link != null) {
-			// TODO:
-			// if link.get...
-			// return _pos - startPos
+			String title = "", destination = "";
+			if (link.getTitle() != null) {
+				title = link.getTitle();
+			} else {
+				title = "";
+			}
+
+			if (link.getDestination() != null) {
+				destination = link.getDestination();
+			} else {
+				destination = "";
+			}
+
+			inlines.add(Block.makeBlock("Link", destination, title,
+					parseRawLabel(rawLabel)));
+			return _pos - startPos;
 		} else {
 			_pos = startPos;
 			return 0;
 		}
-
-		_pos = startPos;
-		return 0;
-
 	}
 
 	public int parseEntity(ArrayList<Block> inlines) {
@@ -505,7 +525,7 @@ public class InlineParser {
 	}
 
 	public int parseString(ArrayList<Block> inlines) {
-		String m = match(RegexPattern.reMain_LITERAL, Pattern.MULTILINE);
+		String m = match(RegexPattern.main_LITERAL, Pattern.MULTILINE);
 		if (m != null) {
 			inlines.add(Block.makeBlock("Str", new StringContent(m)));
 			return m.length();

@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexPattern {
-	
+
 	public static final String ESCAPABLE = "[!\"#$%&\'()*+,./:;<=>?@\\[\\\\\\]^_`{|}~-]";
 	public static final String ESCAPED_CHAR = "\\\\" + ESCAPABLE;
 	public static final String IN_DOUBLE_QUOTES = "\"(" + ESCAPED_CHAR
@@ -44,7 +44,7 @@ public class RegexPattern {
 	public static final String HTMLBLOCKOPEN = "<(?:" + BLOCKTAGNAME
 			+ "[\\s/>]" + "|" + "/" + BLOCKTAGNAME + "[\\s>]" + "|" + "[?!])";
 
-	public static final String reMain_LITERAL = "^(?:[\\n`\\[\\]\\\\!<&*_]|[^\\n`\\[\\]\\\\!<&*_]+)";
+	public static final String main_LITERAL = "^(?:[\\n`\\[\\]\\\\!<&*_]|[^\\n`\\[\\]\\\\!<&*_]+)";
 
 	private static RegexPattern _instance;
 	private static Pattern _htmlTag, _htmlBlockOpen, _linkTitle,
@@ -55,13 +55,13 @@ public class RegexPattern {
 	private RegexPattern() {
 		_htmlTag = Pattern.compile('^' + HTMLTAG, Pattern.CASE_INSENSITIVE);
 		_htmlBlockOpen = Pattern.compile('^' + HTMLBLOCKOPEN,
-				Pattern.CASE_INSENSITIVE);		
+				Pattern.CASE_INSENSITIVE);
 		_escapable = Pattern.compile(ESCAPABLE);
 
 		_linkTitle = Pattern.compile("^(?:\"(" + ESCAPED_CHAR
 				+ "|[^\"\\x00])*\"" + "|" + "'(" + ESCAPED_CHAR
 				+ "|[^'\\x00])*'" + "|" + "\\((" + ESCAPED_CHAR
-			+ "|[^)\\x00])*\\))");
+				+ "|[^)\\x00])*\\))");
 		_linkDestinationBraces = Pattern.compile("^(?:[<](?:[^<>\\n\\\\\\x00]"
 				+ "|" + ESCAPED_CHAR + "|" + "\\\\)*[>])");
 		_linkDestination = Pattern.compile("^(?:" + REG_CHAR + "+|"
@@ -121,7 +121,7 @@ public class RegexPattern {
 	}
 
 	public String getUnescape(String s) {
-		return s.replaceAll(_allEscapedChar, "\\g<1>");
+		return s.replaceAll(_allEscapedChar, "$1");
 	}
 
 	public boolean isBlank(String s) {

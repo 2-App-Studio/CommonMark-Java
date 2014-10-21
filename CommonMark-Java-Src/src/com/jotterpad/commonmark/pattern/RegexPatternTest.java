@@ -81,7 +81,7 @@ public class RegexPatternTest {
 		assertFalse(regex.getEscapable().matcher("hello").matches());
 
 	}
-	
+
 	@Test
 	public void testGetEscapableChar() {
 		RegexPattern regex = RegexPattern.getInstance();
@@ -93,7 +93,7 @@ public class RegexPatternTest {
 		assertFalse(regex.getEscapabledChar().matcher("^").matches());
 
 	}
-	
+
 	@Test
 	public void testGetLinkTitle() {
 		RegexPattern regex = RegexPattern.getInstance();
@@ -101,20 +101,38 @@ public class RegexPatternTest {
 		assertTrue(regex.getLinkTitle().matcher("\'L\'").matches());
 		assertTrue(regex.getLinkTitle().matcher("(L)").matches());
 	}
-	
+
 	@Test
 	public void testGetLinkDestinationBraces() {
 		RegexPattern regex = RegexPattern.getInstance();
-		assertTrue(regex.getLinkDestinationBraces().matcher("<a href=\"abc.com\">").matches());
-		assertTrue(regex.getLinkDestinationBraces().matcher("<a href=\"\">").matches());
-		assertTrue(regex.getLinkDestinationBraces().matcher("<a href=\"/this\">").matches());
+		assertTrue(regex.getLinkDestinationBraces()
+				.matcher("<a href=\"abc.com\">").matches());
+		assertTrue(regex.getLinkDestinationBraces().matcher("<a href=\"\">")
+				.matches());
+		assertTrue(regex.getLinkDestinationBraces()
+				.matcher("<a href=\"/this\">").matches());
 	}
-	
+
 	@Test
-	public void testGetLinkDestination() {
+	public void testGetHRule() {
 		RegexPattern regex = RegexPattern.getInstance();
-		assertTrue(regex.getLinkDestination().matcher("<a href=\"abc.com\">").matches());
-		assertTrue(regex.getLinkDestination().matcher("<a href=\"\">").matches());
-		assertTrue(regex.getLinkDestination().matcher("<a href=\"/this\">").matches());
+		assertTrue(regex.getHRule().matcher("***").matches());
+		assertTrue(regex.getHRule().matcher("---").matches());
+		assertTrue(regex.getHRule().matcher("___").matches());
+
+		assertFalse(regex.getHRule().matcher("__").matches());
+		assertFalse(regex.getHRule().matcher("").matches());
+		assertFalse(regex.getHRule().matcher("    ***").matches());
+
+	}
+
+	@Test
+	public void testGeUnescaped() {
+		RegexPattern regex = RegexPattern.getInstance();
+		assertEquals(regex.getUnescape("\\^"), "^");
+		assertEquals(regex.getUnescape("\\$"), "$");
+		assertEquals(regex.getUnescape("\\\\$"), "\\$");
+		assertEquals(regex.getUnescape("$"), "$");
+
 	}
 }

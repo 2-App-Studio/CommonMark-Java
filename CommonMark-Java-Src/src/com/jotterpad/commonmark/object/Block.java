@@ -6,17 +6,20 @@ import java.util.HashMap;
 public class Block {
 
 	// TODO: Data types still not confirmed
-	String _tag, _destination, _stringContent, _title, _info, _startLine,
-			_startColumn, _endLine;
-	Content _c;
-	boolean _isOpen, _lastLineBlank, _tight;
-	ArrayList<Block> _children, _parent, _label;
-	ArrayList<String> _strings, _inlineContent;
-	HashMap<String, String> _listData;
+	private String _tag, _destination, _stringContent, _title, _info;
+	private Content _c;
+	private boolean _isOpen, _lastLineBlank, _tight;
+	private Block _parent;
+	private ArrayList<Block> _children, _label, _inlineContent;
+	private ArrayList<String> _strings;
+	private ListData _listData;
+	private int _startLine, _startColumn, _endLine;
+
+	private int _fenceOffset, _fenceLength, _level;
+	private char _fenceChar;
 
 	private Block(String tag, Content c, String destination,
-			ArrayList<Block> label, String startLine, String startColumn,
-			String title) {
+			ArrayList<Block> label, int startLine, int startColumn, String title) {
 		_tag = tag;
 		_c = c;
 		_destination = destination;
@@ -30,30 +33,39 @@ public class Block {
 		_parent = null;
 		_stringContent = "";
 		_strings = new ArrayList<String>();
-		_inlineContent = new ArrayList<String>();
-		_listData = new HashMap<String, String>();
+		_inlineContent = new ArrayList<Block>();
+		_listData = null;
 		_title = title;
 		_info = "";
 		_tight = false;
+
+		// Additional
+		_fenceOffset = 0;
+		_fenceLength = 0;
+		_level = 0;
 	}
 
 	public static Block makeBlock(String tag) {
 		return new Block(tag, new StringContent(""), "",
-				new ArrayList<Block>(), "", "", "");
+				new ArrayList<Block>(), -1, -1, "");
 	}
 
 	public static Block makeBlock(String tag, Content c) {
-		return new Block(tag, c, "", new ArrayList<Block>(), "", "", "");
+		return new Block(tag, c, "", new ArrayList<Block>(), -1, -1, "");
+	}
+
+	public static Block makeBlock(String tag, String dest, String title,
+			ArrayList<Block> label) {
+		return new Block(tag, new StringContent(""), dest, label, -1, -1, title);
 	}
 
 	public static Block makeBlock(String tag, ArrayList<Block> label,
 			String destination) {
-		return new Block(tag, new StringContent(""), destination, label, "",
-				"", "");
+		return new Block(tag, new StringContent(""), destination, label, -1,
+				-1, "");
 	}
 
-	public static Block makeBlock(String tag, String startLine,
-			String startColumn) {
+	public static Block makeBlock(String tag, int startLine, int startColumn) {
 		return new Block(tag, new StringContent(""), "",
 				new ArrayList<Block>(), startLine, startColumn, "");
 	}
@@ -98,23 +110,23 @@ public class Block {
 		return _tight;
 	}
 
-	public String getStartLine() {
+	public int getStartLine() {
 		return _startLine;
 	}
 
-	public String getStartColumn() {
+	public int getStartColumn() {
 		return _startColumn;
 	}
 
-	public String getEndLine() {
+	public int getEndLine() {
 		return _endLine;
 	}
 
-	public ArrayList<Block> getChildrens() {
+	public ArrayList<Block> getChildren() {
 		return _children;
 	}
 
-	public ArrayList<Block> getParents() {
+	public Block getParent() {
 		return _parent;
 	}
 
@@ -122,12 +134,28 @@ public class Block {
 		return _strings;
 	}
 
-	public ArrayList<String> getInlineContent() {
+	public ArrayList<Block> getInlineContent() {
 		return _inlineContent;
 	}
 
-	public HashMap<String, String> getListData() {
+	public ListData getListData() {
 		return _listData;
+	}
+
+	public int getFenceOffset() {
+		return _fenceOffset;
+	}
+
+	public int getFenceLength() {
+		return _fenceLength;
+	}
+	
+	public char getFenceChar() {
+		return _fenceChar;
+	}
+	
+	public int getLevel() {
+		return _level;
 	}
 
 	public void setTag(String tag) {
@@ -170,15 +198,15 @@ public class Block {
 		this._tight = tight;
 	}
 
-	public void setStartLine(String startLine) {
+	public void setStartLine(int startLine) {
 		this._startLine = startLine;
 	}
 
-	public void setStartColumn(String startColumn) {
+	public void setStartColumn(int startColumn) {
 		this._startColumn = startColumn;
 	}
 
-	public void setEndLine(String endLine) {
+	public void setEndLine(int endLine) {
 		this._endLine = endLine;
 	}
 
@@ -186,7 +214,7 @@ public class Block {
 		this._children = children;
 	}
 
-	public void setPrents(ArrayList<Block> parent) {
+	public void setPrent(Block parent) {
 		this._parent = parent;
 	}
 
@@ -194,11 +222,27 @@ public class Block {
 		this._strings = strings;
 	}
 
-	public void setInlineContent(ArrayList<String> inlineContent) {
+	public void setInlineContent(ArrayList<Block> inlineContent) {
 		this._inlineContent = inlineContent;
 	}
 
-	public void setListData(HashMap<String, String> listData) {
+	public void setListData(ListData listData) {
 		this._listData = listData;
+	}
+
+	public void setFenceOffset(int fenceOffset) {
+		_fenceOffset = fenceOffset;
+	}
+
+	public void setFenceLength(int fenceLength) {
+		_fenceLength = fenceLength;
+	}
+
+	public void setFenceChar(char fenceChar) {
+		_fenceChar = fenceChar;
+	}
+
+	public void setLevel(int level) {
+		_level = level;
 	}
 }

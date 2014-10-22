@@ -2,7 +2,7 @@ package com.jotterpad.commonmark.object;
 
 import java.util.ArrayList;
 
-public class Block implements Cloneable{
+public class Block implements Cloneable {
 
 	// TODO: Data types still not confirmed
 	private String _tag, _destination, _stringContent, _title, _info;
@@ -20,6 +20,44 @@ public class Block implements Cloneable{
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public static String printBlock(int level, Block block) {
+		String s = "";
+
+		String levels = "*****************************************************************".substring(
+				0, level * 4);
+		s += "|" + levels;
+
+		if (block.getC() instanceof StringContent) {
+			s += " " + ((StringContent) block.getC()).getContent();
+		}
+		if (!block.getStringContent().isEmpty()) {
+			s += " " + block.getStringContent();
+		}
+		if (!block.getDestination().isEmpty()) {
+			s += " " + block.getDestination();
+		}
+		if (!block.getInfo().isEmpty()) {
+			s += " " + block.getInfo();
+		}
+		if (block.getStrings().size() > 0) {
+			s += " [SS: " + block.getStrings().size() + "]";
+		}
+
+		s += " (" + block.getTag() + ")" + "\n";
+
+		ArrayList<Block> inlines = block.getInlineContent();
+		for (Block inline : inlines) {
+			s += Block.printBlock(level + 1, inline);
+		}
+
+		ArrayList<Block> children = block.getChildren();
+		for (Block child : children) {
+			s += Block.printBlock(level + 1, child) + "\n";
+		}
+
+		return s;
 	}
 
 	private Block(String tag, Content c, String destination,
@@ -153,11 +191,11 @@ public class Block implements Cloneable{
 	public int getFenceLength() {
 		return _fenceLength;
 	}
-	
+
 	public char getFenceChar() {
 		return _fenceChar;
 	}
-	
+
 	public int getLevel() {
 		return _level;
 	}

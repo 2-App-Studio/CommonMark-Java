@@ -50,7 +50,7 @@ public class DocParser {
 			return true;
 		}
 		if ((block.getTag().equals("List") || block.getTag().equals("ListItem"))
-				|| block.getChildren().size() > 0) {
+				&& block.getChildren().size() > 0) {
 			return endsWithBlankLine(block.getChildren().get(
 					block.getChildren().size() - 1));
 		} else {
@@ -83,7 +83,7 @@ public class DocParser {
 	}
 
 	private void addLine(String line, int offset) {
-		String s = line.substring(offset, line.length());
+		String s = line.substring(offset);
 		if (!_tip.isOpen()) {
 			throw new RuntimeException("Attempted to add line (" + line
 					+ ") to closed container.");
@@ -269,9 +269,9 @@ public class DocParser {
 			}
 
 			Matcher ATXmatch = Pattern.compile("^#{1,6}(?: +|$)").matcher(
-					line.substring(firstNonSpace, line.length()));
+					line.substring(firstNonSpace));
 			Matcher FENmatch = Pattern.compile("^`{3,}(?!.*`)|^~{3,}(?!.*~)")
-					.matcher(line.substring(firstNonSpace, line.length()));
+					.matcher(line.substring(firstNonSpace));
 			Matcher PARmatch = Pattern.compile("^(?:=+|-+) *$").matcher(
 					line.substring(firstNonSpace, line.length()));
 			ListData data = parseListMarker(line, firstNonSpace);
@@ -282,6 +282,7 @@ public class DocParser {
 					offset += CODE_INDENT;
 					closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 							lastMatchedContainer);
+					container = addChild("IndentedCode", lineNumber, offset);
 				} else {
 					break;
 				}
@@ -294,6 +295,7 @@ public class DocParser {
 				}
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 						lastMatchedContainer);
+				container = addChild("BlockQuote", lineNumber, offset);
 			} else if (ATXmatch.find()) {
 				offset = firstNonSpace + ATXmatch.group(0).length();
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
@@ -302,16 +304,16 @@ public class DocParser {
 				container.setLevel(ATXmatch.group(0).trim().length());
 
 				// Regex Literal String
-				if (Pattern.compile("\\\\#")
-						.matcher(line.substring(offset, line.length())).find()) {
-					String tempLine = line.substring(offset, line.length())
-							.replaceAll("(?:(\\\\#) *#*| *#+) *$", "$1");
+				if (Pattern.compile("\\\\#").matcher(line.substring(offset))
+						.find()) {
+					String tempLine = line.substring(offset).replaceAll(
+							"(?:(\\\\#) *#*| *#+) *$", "$1");
 					ArrayList<String> strings = new ArrayList<String>();
 					strings.add(tempLine);
 					container.setStrings(strings);
 				} else {
-					String tempLine = line.substring(offset, line.length())
-							.replaceAll("(?:(\\\\#) *#*| *#+) *$", "");
+					String tempLine = line.substring(offset).replaceAll(
+							"(?:(\\\\#) *#*| *#+) *$", "");
 					ArrayList<String> strings = new ArrayList<String>();
 					strings.add(tempLine);
 					container.setStrings(strings);
@@ -333,6 +335,7 @@ public class DocParser {
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 						lastMatchedContainer);
 				container = addChild("HtmlBlock", lineNumber, firstNonSpace);
+				break;
 			} else if (container.getTag().equals("Paragraph")
 					&& container.getStrings().size() == 1 && PARmatch.find()) {
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
@@ -354,7 +357,7 @@ public class DocParser {
 				data.setMarkerOffset(indent);
 				offset = firstNonSpace + data.getPadding();
 				if (!container.getTag().equals("List")
-						|| listsMatch(container.getListData(), data)) {
+						|| !listsMatch(container.getListData(), data)) {
 					container = addChild("List", lineNumber, firstNonSpace);
 					container.setListData(data);
 				}
@@ -395,12 +398,11 @@ public class DocParser {
 			closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 					lastMatchedContainer);
 			boolean isLastLineBlank = blank
-					&& (container.getTag().equals("BlockQuote")
+					&& !(container.getTag().equals("BlockQuote")
 							|| container.getTag().equals("FencedCode") || (container
 							.getTag().equals("ListItem")
 							&& container.getChildren().size() == 0 && container
 							.getStartLine() == lineNumber));
-			container.setLastLineBlank(isLastLineBlank);
 			Block cont = container;
 			while (cont.getParent() != null) {
 				cont.getParent().setLastLineBlank(false);
@@ -433,7 +435,7 @@ public class DocParser {
 				}
 			} else if (container.getTag().equals("ATXHeader")
 					|| container.getTag().equals("SetextHeader")
-					|| container.getTag().equals("HorizontalRule")) {
+					|| container.getTag().equals("HtmlBlock")) {
 
 			} else {
 				if (acceptsLine(container.getTag())) {
@@ -443,6 +445,7 @@ public class DocParser {
 				} else if (!container.getTag().equals("HorizontalRule")
 						&& !container.getTag().equals("SetextHeader")) {
 					container = addChild("Paragraph", lineNumber, firstNonSpace);
+					addLine(line, firstNonSpace);
 				} else {
 
 				}
@@ -499,7 +502,7 @@ public class DocParser {
 			}
 		} else if (block.getTag().equals("ATXHeader")
 				|| block.getTag().equals("SetextHeader")
-				|| block.getTag().equals("HorizontalRule")) {
+				|| block.getTag().equals("HtmlBlock")) {
 			block.setStringContent(CollectionUtils.join(block.getStrings(),
 					"\n"));
 		} else if (block.getTag().equals("IndentedCode")) {
@@ -514,8 +517,9 @@ public class DocParser {
 			if (block.getStrings().size() == 1) {
 				block.setStringContent("");
 			} else {
-				block.setStringContent(CollectionUtils.join(block.getStrings(),
-						"\n"));
+				block.setStringContent(CollectionUtils.join(
+						new ArrayList<String>(block.getStrings().subList(1,
+								block.getStrings().size())), "\n"));
 			}
 		} else if (block.getTag().equals("List")) {
 			block.setTight(true);
@@ -553,8 +557,8 @@ public class DocParser {
 
 	private void processInlines(Block block) {
 		if (block.getTag().equals("ATXHeader")
-				|| block.getTag().equals("SetextHeader")
-				|| block.getTag().equals("HorizontalRule")) {
+				|| block.getTag().equals("Paragraph")
+				|| block.getTag().equals("SetextHeader")) {
 			block.setInlineContent(_inlineParser.parse(block.getStringContent()
 					.trim(), _refMap));
 			block.setStringContent("");
@@ -572,8 +576,6 @@ public class DocParser {
 		_tip = _doc;
 		_refMap = new HashMap<String, RefMapItem>();
 
-		
-		
 		// Regex Literal String
 		String tempInput = input.replaceAll("\\n$", "");
 		String[] lines = Pattern.compile("\\r\\n|\\n|\\r").split(tempInput);
@@ -590,5 +592,18 @@ public class DocParser {
 		processInlines(_doc);
 
 		return _doc;
+	}
+	
+ 
+	public String printParser() {
+		String s = "";
+		
+		ArrayList<Block> levelOne = _doc.getChildren();
+		System.out.println("|**** Document");
+		for(Block block : levelOne) {
+			s += Block.printBlock(2, block);
+		}
+		
+		return s;
 	}
 }

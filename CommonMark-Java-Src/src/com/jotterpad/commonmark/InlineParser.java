@@ -180,18 +180,20 @@ public class InlineParser {
 		Character a = peek();
 		charAfter = a != null ? a : '\n';
 
+		// TODO: Correct? Check for whitespace
 		boolean canOpen = (numDelims > 0) && (numDelims <= 3)
-				&& (!Pattern.matches("\\s", String.valueOf(charAfter)));
+				&& (!Character.isWhitespace(charAfter));
 		boolean canClose = (numDelims > 0) && (numDelims <= 3)
-				&& (!Pattern.matches("\\s", String.valueOf(charBefore)));
+				&& (!Character.isWhitespace(charBefore));
 
 		if (c == '_') {
-			Pattern pattern = Pattern.compile("[a-z0-9]",
-					Pattern.CASE_INSENSITIVE);
+			// TODO: Correct? Check for alphanumeric
 			canOpen = canOpen
-					&& (!pattern.matcher(String.valueOf(charBefore)).matches());
+					&& (!(Character.isDigit(charBefore) && Character
+							.isLetter(charBefore)));
 			canClose = canClose
-					&& (!pattern.matcher(String.valueOf(charAfter)).matches());
+					&& (!(Character.isDigit(charAfter) && Character
+							.isLetter(charAfter)));
 		}
 		_pos = startPos;
 
@@ -245,7 +247,7 @@ public class InlineParser {
 									inlines.size())));
 					if (inlines.size() > 1) {
 						inlines = new ArrayList<Block>(inlines.subList(0,
-								delimPos));
+								delimPos + 1));
 						// Originally pop
 					}
 					break;
@@ -267,7 +269,7 @@ public class InlineParser {
 									inlines.size())));
 					if (inlines.size() > 1) {
 						inlines = new ArrayList<Block>(inlines.subList(0,
-								delimPos));
+								delimPos + 1));
 						// Originally pop
 					}
 					break;
@@ -283,7 +285,7 @@ public class InlineParser {
 				res = scanDelims(c);
 				if (res.getNumDelims() >= 1 && res.getNumDelims() <= 3
 						&& res.getCanClose()
-						&& res.getNumDelims() == firstCloseDelims) {
+						&& res.getNumDelims() != firstCloseDelims) {
 					if (firstCloseDelims == 1 && numDelims > 2) {
 						res.setNumDelims(2);
 					} else if (firstCloseDelims == 2) {
@@ -296,8 +298,8 @@ public class InlineParser {
 					if (firstClose > 0) {
 						String tag = firstCloseDelims == 1 ? "Strong" : "Emph";
 						inlines.get(delimPos).setTag(tag);
+						
 						String temp = firstCloseDelims == 1 ? "Emph" : "Strong";
-
 						ArrayList<Block> blocks = new ArrayList<Block>();
 						blocks.add(Block.makeBlock(temp, new BlocksContent(
 								inlines.subList(delimPos + 1, firstClose))));
@@ -308,7 +310,7 @@ public class InlineParser {
 																				// 362?
 						if (inlines.size() > 1) {
 							inlines = new ArrayList<Block>(inlines.subList(0,
-									delimPos));
+									delimPos + 1));
 							// Originally pop
 						}
 						break;
@@ -362,7 +364,8 @@ public class InlineParser {
 	}
 
 	public int parseLinkLabel() {
-		if (peek() == null || peek() != '[') {
+		Character peek = peek();
+		if (peek == null || peek != '[') {
 			return 0;
 		}
 
@@ -395,7 +398,7 @@ public class InlineParser {
 				break;
 			case ']':
 				nestLevel--;
-				_pos--;
+				_pos++;
 				break;
 			case '\\':
 				parseEscaped(new ArrayList<Block>());
@@ -441,8 +444,8 @@ public class InlineParser {
 				String dest = parseLinkDestination();
 				if (dest != null && spnl()) {
 					String title = "";
-					if (Pattern.matches("^\\s",
-							String.valueOf(_subject.charAt(_pos - 1)))) {
+					// Changed to whitespace. Correct?
+					if (Character.isWhitespace(_subject.charAt(_pos - 1))) {
 						title = parseLinkTitle();
 					} else {
 						title = "";
@@ -534,20 +537,29 @@ public class InlineParser {
 		}
 	}
 
+	// TODO:
+	// TODO:
+	// TODO:
+	// TODO:
+	// TODO:
+	// TODO:
+	// TODO:
+	// TODO:
+	// TODO:
 	public int parseNewLine(ArrayList<Block> inlines) {
 		if (peek() == '\n') {
 			_pos++;
 			Block last = inlines.get(inlines.size() - 1);
+			// Logic Modified
 			if (last != null && last.getTag().equals("Str")) {
 				String content = ((StringContent) last.getC()).getContent();
-				if (content.substring(content.length() - 2, content.length())
+				if (content.substring(content.length() - 2)
 						.equals("  ")) {
 					// Originally Literal String
 					String replaceTo = content.replaceAll(" *$", "");
 					last.setC(new StringContent(replaceTo));
 					inlines.add(Block.makeBlock("Hardbreak"));
-				} else if (content.substring(content.length() - 1,
-						content.length()).equals(" ")) {
+				} else if (content.substring(content.length() - 1).equals(" ")) {
 					last.setC(new StringContent(content.substring(0,
 							content.length() - 1)));
 					inlines.add(Block.makeBlock("Softbreak"));
@@ -637,6 +649,11 @@ public class InlineParser {
 		Character c = peek();
 		int res = 0;
 
+		if (c == null) {
+			System.out.println("PARSING INLINE, PEEKING: NULL");
+			return 0;
+		}
+		System.out.println("PARSING INLINE, PEEKING: " + c);
 		switch (c) {
 		case '\n':
 			res = parseNewLine(inlines);

@@ -1,8 +1,10 @@
-package com.jotterpad.commonmark.pattern;
+package com.jotterpad.commonmark.test;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import com.jotterpad.commonmark.pattern.RegexPattern;
 
 public class RegexPatternTest {
 

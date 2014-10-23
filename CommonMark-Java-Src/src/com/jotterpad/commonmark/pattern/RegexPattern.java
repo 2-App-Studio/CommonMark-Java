@@ -142,7 +142,8 @@ public class RegexPattern {
 	public int matchAt(Pattern pattern, String s, int offset) {
 		String subStr = s.substring(offset);
 		Matcher matcher = pattern.matcher(subStr);
-		if (matcher.find()) {
+		boolean isMatch = matcher.find();
+		if (isMatch) {
 			return offset + subStr.indexOf(matcher.group(0));
 		} else {
 			return -1;

@@ -2,9 +2,8 @@ package com.jotterpad.commonmark.object;
 
 import java.util.ArrayList;
 
-public class Block implements Cloneable {
+public class Block {
 
-	// TODO: Data types still not confirmed
 	private String _tag, _destination, _stringContent, _title, _info;
 	private Content _c;
 	private boolean _isOpen, _lastLineBlank, _tight;
@@ -25,8 +24,8 @@ public class Block implements Cloneable {
 	public static String printBlock(int level, Block block) {
 		String s = "";
 
-		String levels = "*****************************************************************".substring(
-				0, level * 4);
+		String levels = "*****************************************************************"
+				.substring(0, level * 4);
 		s += "|" + levels;
 
 		if (block.getC() instanceof StringContent) {

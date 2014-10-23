@@ -1,7 +1,6 @@
 package com.jotterpad.commonmark;
 
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 public class EntityTrans {
 

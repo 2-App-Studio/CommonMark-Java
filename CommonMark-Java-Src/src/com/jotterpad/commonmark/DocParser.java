@@ -119,16 +119,18 @@ public class DocParser {
 		}
 		Matcher match1 = Pattern.compile("^[*+-]( +|$)").matcher(rest);
 		Matcher match2 = Pattern.compile("^(\\d+)([.)])( +|$)").matcher(rest);
+		boolean isMatch1 = match1.find();
+		boolean isMatch2 = match2.find();
 
 		int spacesAfterMarker = -1;
 		boolean blankItem = false;
 
-		if (match1.find()) {
+		if (isMatch1) {
 			spacesAfterMarker = match1.group(1).length();
 			listData = new UnorderedListData("Bullet", String.valueOf(match1
 					.group(0).charAt(0)));
 			blankItem = match1.group(0).length() == rest.length();
-		} else if (match2.find()) {
+		} else if (isMatch2) {
 			spacesAfterMarker = match2.group(3).length();
 			listData = new OrderedListData("Ordered", Integer.valueOf(match2
 					.group(1)), match2.group(2));
@@ -138,17 +140,17 @@ public class DocParser {
 		}
 
 		if (spacesAfterMarker >= 5 || spacesAfterMarker < 1 || blankItem) {
-			if (match1.find()) {
+			if (isMatch1) {
 				listData.setPadding(match1.group(0).length()
 						- spacesAfterMarker + 1);
-			} else if (match2.find()) {
+			} else if (isMatch2) {
 				listData.setPadding(match2.group(0).length()
 						- spacesAfterMarker + 1);
 			}
 		} else {
-			if (match1.find()) {
+			if (isMatch1) {
 				listData.setPadding(match1.group(0).length());
-			} else if (match2.find()) {
+			} else if (isMatch2) {
 				listData.setPadding(match2.group(0).length());
 			}
 		}
@@ -274,6 +276,10 @@ public class DocParser {
 					.matcher(line.substring(firstNonSpace));
 			Matcher PARmatch = Pattern.compile("^(?:=+|-+) *$").matcher(
 					line.substring(firstNonSpace, line.length()));
+			boolean isATXmatch = ATXmatch.find();
+			boolean isFENmatch = FENmatch.find();
+			boolean isPARmatch = PARmatch.find();
+
 			ListData data = parseListMarker(line, firstNonSpace);
 
 			int indent = firstNonSpace - offset;
@@ -296,7 +302,7 @@ public class DocParser {
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 						lastMatchedContainer);
 				container = addChild("BlockQuote", lineNumber, offset);
-			} else if (ATXmatch.find()) {
+			} else if (isATXmatch) {
 				offset = firstNonSpace + ATXmatch.group(0).length();
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 						lastMatchedContainer);
@@ -319,7 +325,7 @@ public class DocParser {
 					container.setStrings(strings);
 				}
 				break;
-			} else if (FENmatch.find()) {
+			} else if (isFENmatch) {
 				int fenceLength = FENmatch.group(0).length();
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 						lastMatchedContainer);
@@ -337,7 +343,7 @@ public class DocParser {
 				container = addChild("HtmlBlock", lineNumber, firstNonSpace);
 				break;
 			} else if (container.getTag().equals("Paragraph")
-					&& container.getStrings().size() == 1 && PARmatch.find()) {
+					&& container.getStrings().size() == 1 && isPARmatch) {
 				closeUnmatchedBlocks(alreadyDone, oldTip, lineNumber,
 						lastMatchedContainer);
 				container.setTag("SetextHeader");
@@ -593,17 +599,16 @@ public class DocParser {
 
 		return _doc;
 	}
-	
- 
+
 	public String printParser() {
 		String s = "";
-		
+
 		ArrayList<Block> levelOne = _doc.getChildren();
 		System.out.println("|**** Document");
-		for(Block block : levelOne) {
+		for (Block block : levelOne) {
 			s += Block.printBlock(2, block);
 		}
-		
+
 		return s;
 	}
 }

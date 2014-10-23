@@ -35,7 +35,8 @@ public class InlineParser {
 	 */
 	public String match(Pattern pattern) {
 		Matcher match = pattern.matcher(_subject.substring(_pos));
-		if (match.find()) {
+		boolean isMatch = match.find();
+		if (isMatch) {
 			_pos += match.end(0);
 			return match.group();
 		} else {

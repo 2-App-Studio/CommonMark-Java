@@ -2,13 +2,14 @@ package com.jotterpad.commonmark.object;
 
 public abstract class ListData {
 
-	private int _padding, _markerOffset;
+	private int _padding, _markerOffset, _start;
 	private String _type;
 
-	public ListData(String type, int padding, int markerOffset) {
+	public ListData(String type, int padding, int markerOffset, int start) {
 		_type = type;
 		_padding = padding;
 		_markerOffset = markerOffset;
+        _start = start;
 	}
 
 	public String getType() {
@@ -30,4 +31,6 @@ public abstract class ListData {
 	public void setMarkerOffset(int markerOffset) {
 		_markerOffset = markerOffset;
 	}
+
+    public int getStart () { return _start; }
 }

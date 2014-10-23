@@ -27,12 +27,11 @@ public class InlineParser {
 		_regex = RegexPattern.getInstance();
 	}
 
-	/**
-	 * 
-	 * @param regex
-	 * @param flags
-	 * @return NULL if not found
-	 */
+    /**
+     *
+     * @param pattern
+     * @return
+     */
 	public String match(Pattern pattern) {
 		Matcher match = pattern.matcher(_subject.substring(_pos));
 		boolean isMatch = match.find();
@@ -55,12 +54,11 @@ public class InlineParser {
 		return match(pattern);
 	}
 
-	/**
-	 * 
-	 * @param regex
-	 * @param flags
-	 * @return NULL if not found
-	 */
+    /**
+     *
+     * @param regex
+     * @return
+     */
 	public String match(String regex) {
 		return match(regex, 0);
 	}

@@ -2,17 +2,16 @@ package com.jotterpad.commonmark.object;
 
 public class OrderedListData extends ListData {
 
-	private int _start;
 	private String _delim;
 
-	public OrderedListData(String type, int start, String delim) {
-		super(type, 0, 0);
-		_start = start;
+	public OrderedListData(String type, String delim) {
+		super(type, 0, 0, 0);
 		_delim = delim;
 	}
 
-	public int getStart() {
-		return _start;
+	public OrderedListData(String type, String delim, int start) {
+		super(type, 0, 0, start);
+		_delim = delim;
 	}
 
 	public String getDelim() {

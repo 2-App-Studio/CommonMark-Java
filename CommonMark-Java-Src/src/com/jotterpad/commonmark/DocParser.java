@@ -132,8 +132,8 @@ public class DocParser {
 			blankItem = match1.group(0).length() == rest.length();
 		} else if (isMatch2) {
 			spacesAfterMarker = match2.group(3).length();
-			listData = new OrderedListData("Ordered", Integer.valueOf(match2
-					.group(1)), match2.group(2));
+			listData = new OrderedListData("Ordered", match2.group(2),
+					Integer.valueOf(match2.group(1)));
 			blankItem = match2.group(0).length() == rest.length();
 		} else {
 			return null;

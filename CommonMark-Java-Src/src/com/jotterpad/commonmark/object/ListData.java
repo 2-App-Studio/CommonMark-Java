@@ -9,7 +9,7 @@ public abstract class ListData {
 		_type = type;
 		_padding = padding;
 		_markerOffset = markerOffset;
-        _start = start;
+		_start = start;
 	}
 
 	public String getType() {
@@ -32,5 +32,7 @@ public abstract class ListData {
 		_markerOffset = markerOffset;
 	}
 
-    public int getStart () { return _start; }
+	public int getStart() {
+		return _start;
+	}
 }

@@ -5,7 +5,7 @@ public class UnorderedListData extends ListData {
 	private String _bullet;
 
 	public UnorderedListData(String type, String bullet) {
-		super(type, 0, 0);
+		super(type, 0, 0, 0);
 		_bullet = bullet;
 	}
 

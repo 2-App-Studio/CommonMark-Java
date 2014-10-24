@@ -157,7 +157,7 @@ public class HTMLRenderer {
 						escape(inline.getTitle(), true) });
 			return HTMLRenderer.inTags("a", attrs,
 					renderInlines(inline.getLabel()));
-		} else if (inline.getTag().equalsIgnoreCase("Images")) {
+		} else if (inline.getTag().equalsIgnoreCase("Image")) {
 			attrs.add(new String[] { "src",
 					escape(inline.getDestination(), true) });
 			attrs.add(new String[] { "alt",
@@ -170,7 +170,7 @@ public class HTMLRenderer {
 		} else if (inline.getTag().equalsIgnoreCase("Code"))
 			return inTags("code", new ArrayList<String[]>(), content);
 		else {
-			System.out.print("Unknown inline type " + inline.getTag());
+			System.out.print("Unknown inline type " + inline.getTag() + "\n");
 			return NONE;
 		}
 	}

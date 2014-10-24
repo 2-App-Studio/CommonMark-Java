@@ -76,13 +76,13 @@ public class InlineParser {
 	}
 
 	public boolean spnl() {
-		match("^ *(?:\\n *)?"); // Originally Literal Regex
+		match("^ *(?:\\n *)?");
 		return true;
 	}
 
 	public int parseBackticks(ArrayList<Block> inlines) {
 		int startPos = _pos;
-		String ticks = match("^`+"); // Originally Literal Regex
+		String ticks = match("^`+");
 		if (ticks == null) {
 			return 0;
 		}
@@ -110,7 +110,7 @@ public class InlineParser {
 		String subj = _subject;
 		int pos = _pos;
 
-		if (subj.charAt(pos) == '\\') {
+		if (subj.length() > pos && subj.charAt(pos) == '\\') {
 			if (subj.length() > pos + 1 && subj.charAt(pos + 1) == '\n') {
 				inlines.add(Block.makeBlock("Hardbreak"));
 				_pos += 2;
@@ -172,6 +172,7 @@ public class InlineParser {
 
 		charBefore = _pos == 0 ? '\n' : _subject.charAt(_pos - 1);
 
+		// TODO: Want to check for null?
 		while (peek() == c) {
 			numDelims++;
 			_pos++;
@@ -248,7 +249,6 @@ public class InlineParser {
 					if (inlines.size() > 1) {
 						inlines = new ArrayList<Block>(inlines.subList(0,
 								delimPos + 1));
-						// Originally pop
 					}
 					break;
 				} else {
@@ -270,7 +270,6 @@ public class InlineParser {
 					if (inlines.size() > 1) {
 						inlines = new ArrayList<Block>(inlines.subList(0,
 								delimPos + 1));
-						// Originally pop
 					}
 					break;
 				} else {
@@ -311,7 +310,6 @@ public class InlineParser {
 						if (inlines.size() > 1) {
 							inlines = new ArrayList<Block>(inlines.subList(0,
 									delimPos + 1));
-							// Originally pop
 						}
 						break;
 					} else {
@@ -328,7 +326,7 @@ public class InlineParser {
 			}
 			return _pos - startPos;
 		} else {
-			return 1; // Originally returned res
+			return 1;
 		}
 	}
 
@@ -426,7 +424,6 @@ public class InlineParser {
 		return parse(s.substring(1, s.length() - 1));
 	}
 
-	// STUB
 	public int parseLink(ArrayList<Block> inlines) {
 		int startPos = _pos;
 		int n = parseLinkLabel();
@@ -556,7 +553,6 @@ public class InlineParser {
 				String content = ((StringContent) last.getC()).getContent();
 				if (content.length() >= 2
 						&& content.substring(content.length() - 2).equals("  ")) {
-					// Originally Literal String
 					String replaceTo = content.replaceAll(" *$", "");
 					last.setC(new StringContent(replaceTo));
 					inlines.add(Block.makeBlock("Hardbreak"));
@@ -632,7 +628,6 @@ public class InlineParser {
 			_pos = beforeTitle;
 		}
 
-		// Originally Literal String
 		if (match("^ *(?:\\n|$)") == null) {
 			_pos = startPos;
 			return 0;
@@ -650,40 +645,38 @@ public class InlineParser {
 		Character c = peek();
 		int res = 0;
 
-		if (c == null) {
-			return 0;
-		}
-		switch (c) {
-		case '\n':
-			res = parseNewLine(inlines);
-			break;
-		case '\\':
-			res = parseEscaped(inlines);
-			break;
-		case '`':
-			res = parseBackticks(inlines);
-			break;
-		case '*':
-		case '_':
-			res = parseEmphasis(inlines);
-			break;
-		case '[':
-			res = parseLink(inlines);
-			break;
-		case '!':
-			res = parseImage(inlines);
-			break;
-		case '<':
-			res = parseAutoLink(inlines);
-			if (res == 0) {
-				res = parseHtmlTag(inlines);
+		if (c != null) {
+			switch (c) {
+			case '\n':
+				res = parseNewLine(inlines);
+				break;
+			case '\\':
+				res = parseEscaped(inlines);
+				break;
+			case '`':
+				res = parseBackticks(inlines);
+				break;
+			case '*':
+			case '_':
+				res = parseEmphasis(inlines);
+				break;
+			case '[':
+				res = parseLink(inlines);
+				break;
+			case '!':
+				res = parseImage(inlines);
+				break;
+			case '<':
+				res = parseAutoLink(inlines);
+				if (res == 0) {
+					res = parseHtmlTag(inlines);
+				}
+				break;
+			case '&':
+				res = parseEntity(inlines);
+				break;
 			}
-			break;
-		case '&':
-			res = parseEntity(inlines);
-			break;
 		}
-
 		if (res == 0) {
 			return parseString(inlines);
 		} else {

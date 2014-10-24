@@ -3304,7 +3304,7 @@ always need to be written as entities for security reasons.</p>
 <p>.
   &amp; © Æ Ď ¾ ℋ ⅆ ∲
 .</p>
-<p>  &amp; © Æ Ď ¾ ℋ ⅆ ∲</p>
+<p>  &amp; © Æ Ď ¾ ℋ ⅆ ∲</p>
 .
 <p><a href="#decimal-entities">Decimal entities</a> <a id="decimal-entities"></a>
 consist of <code>&amp;#</code> + a string of 1--8 arabic digits + <code>;</code>. Again, these
@@ -3786,22 +3786,22 @@ or code spans:</p>
 .
 <p>Or use the other emphasis character:</p>
 <p>.
-<em>_</em>
+*_*
 .</p>
 <p><em>_</em></p>
 .
 <p>.
-<em>*</em>
+_*_
 .</p>
 <p><em>*</em></p>
 .
 <p>.
-<em>__</em>
+*__*
 .</p>
 <p><em>__</em></p>
 .
 <p>.
-<em>**</em>
+_**_
 .</p>
 <p><em>**</em></p>
 .
@@ -3966,7 +3966,7 @@ emphasis:</p>
 <p><em>foo</em><em>bar</em><em>baz</em></p>
 .
 <p>.
-<em><em>foo</em>bar</em>baz**
+<strong>foo<em>bar</em>baz</strong>
 .</p>
 <p><em><em>foo</em>bar</em>baz**</p>
 .
@@ -4041,14 +4041,14 @@ delimiter is closed by the first <code>*</code> before <code>bar</code>:</p>
 <p>We retain symmetry in these cases:</p>
 <p>.
 <em>foo</em>*</p>
-<p>*<em>foo</em>
+<p>**foo*
 .</p>
 <p><em>foo</em>*</p>
 <p>*<em>foo</em></p>
 .
 <p>.
 <em>foo <em>bar</em></em></p>
-<p><em><em>foo</em> bar</em>
+<p>**foo* bar*
 .</p>
 <p><em>foo <em>bar</em></em></p>
 <p><em><em>foo</em> bar</em></p>
@@ -4060,7 +4060,7 @@ delimiter is closed by the first <code>*</code> before <code>bar</code>:</p>
 <p><em>bar</em>**</p>
 .
 <p>.
-**<em>foo</em>
+***foo*
 .</p>
 <p>**<em>foo</em></p>
 .
@@ -4070,7 +4070,7 @@ delimiter is closed by the first <code>*</code> before <code>bar</code>:</p>
 <p><strong>bar</strong>*</p>
 .
 <p>.
-*<strong>foo</strong>
+***foo**
 .</p>
 <p>*<strong>foo</strong></p>
 .
@@ -4679,7 +4679,7 @@ followed by <code>&gt;</code>.  The link's label is the email address,
 and the URL is <code>mailto:</code> followed by the email address.</p>
 <p>An <a href="#email-address">email address</a>, <a id="email-address"></a>
 for these purposes, is anything that matches
-the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-(type=email)">non-normative regex from the HTML5
+the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-%28type=email%29">non-normative regex from the HTML5
 spec</a>:</p>
 <pre><code>/^[a-zA-Z0-9.!#$%&amp;'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?
 (?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/

@@ -106,14 +106,30 @@ public class DocParser {
 	}
 
 	private boolean listsMatch(ListData listData, ListData itemData) {
-		// TODO: NEED HELP!
-		return listData.equals(itemData)
-				&& listData.getClass().equals(itemData.getClass());
+		boolean same = ((listData instanceof OrderedListData && itemData instanceof OrderedListData) || (listData instanceof UnorderedListData && itemData instanceof UnorderedListData));
+		if (!same) {
+			return false;
+		} else {
+			same &= (listData.getType().equals(itemData.getType()));
+			if (listData instanceof OrderedListData
+					&& itemData instanceof OrderedListData) {
+				same &= (((OrderedListData) listData).getDelim()
+						.equals(((OrderedListData) listData).getDelim()));
+			} else if (listData instanceof UnorderedListData
+					&& itemData instanceof UnorderedListData) {
+				same &= (((UnorderedListData) listData).getBullet()
+						.equals(((UnorderedListData) listData).getBullet()));
+			}
+
+			return same;
+		}
 	}
 
 	private ListData parseListMarker(String line, int offset) {
-		String rest = line.substring(offset, line.length());
+		String rest = line.substring(offset);
 		ListData listData;
+		boolean blankItem = false;
+
 		if (RegexPattern.getInstance().getHRule().matcher(rest).matches()) {
 			return null;
 		}
@@ -123,8 +139,6 @@ public class DocParser {
 		boolean isMatch2 = match2.find();
 
 		int spacesAfterMarker = -1;
-		boolean blankItem = false;
-
 		if (isMatch1) {
 			spacesAfterMarker = match1.group(1).length();
 			listData = new UnorderedListData("Bullet", String.valueOf(match1
@@ -177,8 +191,7 @@ public class DocParser {
 			}
 			container = lastChild;
 
-			// Regex Literal String
-			int match = RegexPattern.getInstance().matchAt(
+ 			int match = RegexPattern.getInstance().matchAt(
 					Pattern.compile("[^ ]"), line, offset);
 			if (match == -1) {
 				firstNonSpace = line.length();
@@ -275,7 +288,7 @@ public class DocParser {
 			Matcher FENmatch = Pattern.compile("^`{3,}(?!.*`)|^~{3,}(?!.*~)")
 					.matcher(line.substring(firstNonSpace));
 			Matcher PARmatch = Pattern.compile("^(?:=+|-+) *$").matcher(
-					line.substring(firstNonSpace, line.length()));
+					line.substring(firstNonSpace));
 			boolean isATXmatch = ATXmatch.find();
 			boolean isFENmatch = FENmatch.find();
 			boolean isPARmatch = PARmatch.find();
@@ -309,8 +322,7 @@ public class DocParser {
 				container = addChild("ATXHeader", lineNumber, firstNonSpace);
 				container.setLevel(ATXmatch.group(0).trim().length());
 
-				// Regex Literal String
-				if (Pattern.compile("\\\\#").matcher(line.substring(offset))
+ 				if (Pattern.compile("\\\\#").matcher(line.substring(offset))
 						.find()) {
 					String tempLine = line.substring(offset).replaceAll(
 							"(?:(\\\\#) *#*| *#+) *$", "$1");
@@ -396,7 +408,7 @@ public class DocParser {
 			// ERROR: Line 454 JS, 1071 PY
 			// _lastLineBlank = false;
 			// Believe to be like this:
-			container.setLastLineBlank(false);
+			//container.setLastLineBlank(false);
 			// ///
 
 			addLine(line, offset);
@@ -516,8 +528,7 @@ public class DocParser {
 		} else if (block.getTag().equals("IndentedCode")) {
 			String joinedString = CollectionUtils
 					.join(block.getStrings(), "\n");
-			// Regex Literal String
-			joinedString = joinedString.replaceAll("(\\n *)*$", "\n");
+ 			joinedString = joinedString.replaceAll("(\\n *)*$", "\n");
 			block.setStringContent(joinedString);
 		} else if (block.getTag().equals("FencedCode")) {
 			block.setInfo(RegexPattern.getInstance().getUnescape(
@@ -603,7 +614,7 @@ public class DocParser {
 		String s = "";
 
 		ArrayList<Block> levelOne = _doc.getChildren();
-		System.out.println("|**** Document");
+		s += "|**** Document";
 		for (Block block : levelOne) {
 			s += Block.printBlock(2, block);
 		}

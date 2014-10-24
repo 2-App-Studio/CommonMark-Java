@@ -187,7 +187,7 @@ in Markdown with a small extension for the side-by-side tests.
 The script `spec2md.pl` can be used to turn `spec.txt` into pandoc
 Markdown, which can then be converted into other formats.
 
-In the examples, the `→` character is used to represent tabs.
+In the examples, the `���` character is used to represent tabs.
 
 # Preprocessing
 
@@ -203,18 +203,18 @@ to a certain encoding.
 Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
 
 .
-→foo→baz→→bim
+���foo���baz������bim
 .
 <pre><code>foo baz     bim
 </code></pre>
 .
 
 .
-    a→a
-    ὐ→a
+    a���a
+    ������a
 .
 <pre><code>a   a
-ὐ   a
+���   a
 </code></pre>
 .
 
@@ -1542,8 +1542,8 @@ foo
 This rule differs from John Gruber's original Markdown syntax
 specification, which says:
 
-> The only restrictions are that block-level HTML elements —
-> e.g. `<div>`, `<table>`, `<pre>`, `<p>`, etc. — must be separated from
+> The only restrictions are that block-level HTML elements ���
+> e.g. `<div>`, `<table>`, `<pre>`, `<p>`, etc. ��� must be separated from
 > surrounding content by blank lines, and the start and end tags of the
 > block should not be indented with tabs or spaces.
 
@@ -1741,11 +1741,11 @@ case-insensitive (see [matches](#matches)).
 .
 
 .
-[ΑΓΩ]: /φου
+[������]: /������
 
-[αγω]
+[������]
 .
-<p><a href="/%CF%86%CE%BF%CF%85">αγω</a></p>
+<p><a href="/%CF%86%CE%BF%CF%85">������</a></p>
 .
 
 Here is a link reference definition with no corresponding link.
@@ -3027,7 +3027,7 @@ John Gruber's Markdown spec says the following about list items:
    delimiters need to be indented."
 
 6. "To put a code block within a list item, the code block needs to be
-   indented twice — 8 spaces or two tabs."
+   indented twice ��� 8 spaces or two tabs."
 
 These rules specify that a paragraph under a list item must be indented
 four spaces (presumably, from the left margin, rather than the start of
@@ -3614,9 +3614,9 @@ Backslashes before other characters are treated as literal
 backslashes:
 
 .
-\→\A\a\ \3\φ\«
+\���\A\a\ \3\��\��
 .
-<p>\   \A\a\ \3\φ\«</p>
+<p>\   \A\a\ \3\��\��</p>
 .
 
 Escaped characters are treated as regular characters and do
@@ -3750,7 +3750,7 @@ always need to be written as entities for security reasons.
 .
 &nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral;
 .
-<p>  &amp; © Æ Ď ¾ ℋ ⅆ ∲</p>
+<p>�� &amp; �� �� �� �� ��� ��� ���</p>
 .
 
 [Decimal entities](#decimal-entities) <a id="decimal-entities"></a>
@@ -3762,7 +3762,7 @@ UTF8 codepoints. Invalid Unicode codepoints will be written as the
 .
 &#35; &#1234; &#992; &#98765432;
 .
-<p># Ӓ Ϡ �</p>
+<p># �� �� ���</p>
 .
 
 [Hexadecimal entities](#hexadecimal-entities) <a id="hexadecimal-entities"></a>
@@ -3772,7 +3772,7 @@ consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
 .
 &#X22; &#XD06; &#xcab;
 .
-<p>&quot; ആ ಫ</p>
+<p>&quot; ��� ���</p>
 .
 
 Here are some nonentities:
@@ -3815,7 +3815,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 .
 [foo](/f&ouml;&ouml; "f&ouml;&ouml;")
 .
-<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
+<p><a href="/f%C3%B6%C3%B6" title="f����">foo</a></p>
 .
 
 .
@@ -3823,7 +3823,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 
 [foo]: /f&ouml;&ouml; "f&ouml;&ouml;"
 .
-<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
+<p><a href="/f%C3%B6%C3%B6" title="f����">foo</a></p>
 .
 
 .
@@ -3831,7 +3831,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 foo
 ```
 .
-<pre><code class="language-föö">foo
+<pre><code class="language-f����">foo
 </code></pre>
 .
 
@@ -5031,11 +5031,11 @@ Matching is case-insensitive:
 Unicode case fold is used:
 
 .
-[Толпой][Толпой] is a Russian word.
+[������������][������������] is a Russian word.
 
-[ТОЛПОЙ]: /url
+[������������]: /url
 .
-<p><a href="/url">Толпой</a> is a Russian word.</p>
+<p><a href="/url">������������</a> is a Russian word.</p>
 .
 
 Consecutive internal whitespace is treated as one space for
@@ -6007,9 +6007,9 @@ hello $.;'there
 .
 
 .
-Foo χρῆν
+Foo ���������
 .
-<p>Foo χρῆν</p>
+<p>Foo ���������</p>
 .
 
 Internal spaces are preserved verbatim:

@@ -140,6 +140,11 @@ public class RegexPattern {
 	 * @return -1 if not found
 	 */
 	public int matchAt(Pattern pattern, String s, int offset) {
+		// Added to combat indexoutofbound
+		if (offset >= s.length()) {
+			return -1;
+		}
+		
 		String subStr = s.substring(offset);
 		Matcher matcher = pattern.matcher(subStr);
 		boolean isMatch = matcher.find();

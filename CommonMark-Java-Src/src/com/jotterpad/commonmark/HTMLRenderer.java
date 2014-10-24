@@ -1,16 +1,15 @@
 package com.jotterpad.commonmark;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.jotterpad.commonmark.library.CollectionUtils;
 import com.jotterpad.commonmark.object.Block;
 import com.jotterpad.commonmark.object.BlocksContent;
 import com.jotterpad.commonmark.object.StringContent;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class HTMLRenderer {
 
@@ -77,11 +76,8 @@ public class HTMLRenderer {
 	 */
 	public String URLescape(String s) {
 		if (!s.contains(MAILTO) && !s.contains(MAILTO.toUpperCase())) {
-			// re.sub("[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)",
-			// "&amp;", HTMLquote(HTMLunescape(s), ":/=*%?&)(#"), re.IGNORECASE)
 			String original = StringEscapeUtils.escapeHtml4(StringEscapeUtils
 					.unescapeHtml4(s));
-			// TODO: does this regex work?
 			String pattern = "[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)";
 			Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(original);
@@ -95,15 +91,21 @@ public class HTMLRenderer {
 	 *
 	 * @param s
 	 *            - - original string to escape
-	 * @param preserve_entities
+	 * @param preserveEntities
 	 *            - whether to preserve the entities
 	 * @return the escaped string
 	 */
-	public String escape(String s, boolean preserve_entities) {
+	public String escape(String s, boolean preserveEntities) {
 		ArrayList<String[]> e;
-		if (preserve_entities) {
-			e = (ArrayList<String[]>) ESCAPE_PAIRS.subList(1, 3);
-			String original = StringEscapeUtils.unescapeHtml4(s);
+		if (preserveEntities) {
+			e = new ArrayList<String[]>(ESCAPE_PAIRS.subList(1, 3));
+			String original = "";
+			try {
+				original = StringEscapeUtils.unescapeHtml4(s);
+			} catch (IllegalArgumentException e2) {
+				// Invalid Unicode codepoints. Writing Replacement code \uFFFD.
+				original = "\uFFFD";
+			}
 			String pattern = "[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)";
 			Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(original);
@@ -271,8 +273,8 @@ public class HTMLRenderer {
 		return renderBlocks(blocks, false);
 	}
 
-	public String render(Block block, boolean in_tight_list) {
-		return this.renderBlock(block, in_tight_list);
+	public String render(Block block, boolean inTightList) {
+		return this.renderBlock(block, inTightList);
 	}
 
 	public String render(Block block) {

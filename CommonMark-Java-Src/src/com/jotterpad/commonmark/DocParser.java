@@ -432,7 +432,9 @@ public class DocParser {
 				// Regex Literal String
 				Matcher FENmatch = Pattern.compile("^(?:`{3,}|~{3,})(?= *$)")
 						.matcher(line.substring(firstNonSpace));
+				// Added FENmatch.find()
 				if (isMatched
+						&& FENmatch.find()
 						&& FENmatch.group(0).length() >= container
 								.getFenceLength()) {
 					finalize(container, lineNumber);
@@ -586,11 +588,8 @@ public class DocParser {
 		String tempInput = input.replaceAll("\\n$", "");
 		String[] lines = Pattern.compile("\\r\\n|\\n|\\r").split(tempInput);
 		for (int i = 0; i < lines.length; i++) {
-			System.out.println("@" + i + ": " + _tip.getTag());
 			incorporateLine(lines[i], i + 1);
 		}
-
-		System.out.println("@DONE");
 
 		while (_tip != null) {
 			finalize(_tip, lines.length - 1);

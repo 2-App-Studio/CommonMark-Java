@@ -27,11 +27,11 @@ public class InlineParser {
 		_regex = RegexPattern.getInstance();
 	}
 
-    /**
-     *
-     * @param pattern
-     * @return
-     */
+	/**
+	 *
+	 * @param pattern
+	 * @return
+	 */
 	public String match(Pattern pattern) {
 		Matcher match = pattern.matcher(_subject.substring(_pos));
 		boolean isMatch = match.find();
@@ -54,11 +54,11 @@ public class InlineParser {
 		return match(pattern);
 	}
 
-    /**
-     *
-     * @param regex
-     * @return
-     */
+	/**
+	 *
+	 * @param regex
+	 * @return
+	 */
 	public String match(String regex) {
 		return match(regex, 0);
 	}
@@ -115,8 +115,9 @@ public class InlineParser {
 				inlines.add(Block.makeBlock("Hardbreak"));
 				_pos += 2;
 				return 2;
-			} else if (_regex.getEscapable()
-					.matcher(subj.substring(pos + 1, pos + 2)).find()) {
+			} else if (subj.length() > pos + 2
+					&& _regex.getEscapable()
+							.matcher(subj.substring(pos + 1, pos + 2)).find()) {
 				inlines.add(Block.makeBlock("Str",
 						new StringContent(subj.substring(pos + 1, pos + 2))));
 				_pos += 2;
@@ -297,7 +298,7 @@ public class InlineParser {
 					if (firstClose > 0) {
 						String tag = firstCloseDelims == 1 ? "Strong" : "Emph";
 						inlines.get(delimPos).setTag(tag);
-						
+
 						String temp = firstCloseDelims == 1 ? "Emph" : "Strong";
 						ArrayList<Block> blocks = new ArrayList<Block>();
 						blocks.add(Block.makeBlock(temp, new BlocksContent(
@@ -378,7 +379,7 @@ public class InlineParser {
 
 		Character c = peek();
 
-		while (((c != ']') || (nestLevel > 0)) && c != null) {
+		while (c != null && ((c != ']') || (nestLevel > 0))) {
 			switch (c) {
 			case '`':
 				parseBackticks(new ArrayList<Block>());
@@ -408,7 +409,7 @@ public class InlineParser {
 			c = peek();
 		}
 
-		if (c == ']') {
+		if (c != null && c == ']') {
 			_labelNestLevel = 0;
 			_pos++;
 			return _pos - startPos;
@@ -437,7 +438,8 @@ public class InlineParser {
 		int afterLabel = _pos;
 		String rawLabel = _subject.substring(startPos, startPos + n);
 
-		if (peek() == '(') {
+		Character c = peek();
+		if (c != null && c == '(') {
 			_pos++;
 			if (spnl()) {
 				String dest = parseLinkDestination();
@@ -552,8 +554,8 @@ public class InlineParser {
 			// Logic Modified
 			if (last != null && last.getTag().equals("Str")) {
 				String content = ((StringContent) last.getC()).getContent();
-				if (content.substring(content.length() - 2)
-						.equals("  ")) {
+				if (content.length() >= 2
+						&& content.substring(content.length() - 2).equals("  ")) {
 					// Originally Literal String
 					String replaceTo = content.replaceAll(" *$", "");
 					last.setC(new StringContent(replaceTo));
@@ -649,10 +651,8 @@ public class InlineParser {
 		int res = 0;
 
 		if (c == null) {
-			System.out.println("PARSING INLINE, PEEKING: NULL");
 			return 0;
 		}
-		System.out.println("PARSING INLINE, PEEKING: " + c);
 		switch (c) {
 		case '\n':
 			res = parseNewLine(inlines);

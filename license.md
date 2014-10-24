@@ -1,4 +1,7 @@
 Copyright (c) 2014, 2 App Studio
+
+Based on stmd.js: Copyright (c) 2014, John MacFarlane
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

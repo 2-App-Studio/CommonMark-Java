@@ -421,7 +421,7 @@ public class InlineParser {
 	}
 
 	public ArrayList<Block> parseRawLabel(String s) {
-		return parse(s.substring(1, s.length() - 1));
+		return new InlineParser().parse(s.substring(1, s.length() - 1));
 	}
 
 	public int parseLink(ArrayList<Block> inlines) {
@@ -438,8 +438,11 @@ public class InlineParser {
 		Character c = peek();
 		if (c != null && c == '(') {
 			_pos++;
+
 			if (spnl()) {
+
 				String dest = parseLinkDestination();
+
 				if (dest != null && spnl()) {
 					String title = "";
 					// Changed to whitespace. Correct?
@@ -644,6 +647,7 @@ public class InlineParser {
 	public int parseInline(ArrayList<Block> inlines) {
 		Character c = peek();
 		int res = 0;
+		System.out.println("PEEK: " + c + " " + _pos);
 
 		if (c != null) {
 			switch (c) {
@@ -661,6 +665,7 @@ public class InlineParser {
 				res = parseEmphasis(inlines);
 				break;
 			case '[':
+				System.out.println("PARSE LINK@ POS: " + _pos);
 				res = parseLink(inlines);
 				break;
 			case '!':

@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class RegexPattern {
 
-	public static final String ESCAPABLE = "[!\"#$%&\'()*+,./:;<=>?@\\[\\\\\\]^_`{|}~-]";
+	public static final String ESCAPABLE = "[!\"#$%&'()*+,./:;<=>?@\\[\\\\\\]^_`{|}~-]";
 	public static final String ESCAPED_CHAR = "\\\\" + ESCAPABLE;
 	public static final String IN_DOUBLE_QUOTES = "\"(" + ESCAPED_CHAR
 			+ "|[^\"\\x00])*\"";
@@ -66,11 +66,11 @@ public class RegexPattern {
 				+ "|" + ESCAPED_CHAR + "|" + "\\\\)*[>])");
 		_linkDestination = Pattern.compile("^(?:" + REG_CHAR + "+|"
 				+ ESCAPED_CHAR + "|" + IN_PARENS_NOSP + ")*");
+		_allEscapedChar = "\\\\(" + ESCAPABLE + ")";
 		_escapedChar = Pattern.compile("^\\\\(" + ESCAPABLE + ")");
 		_allTab = Pattern.compile("\t");
 		_hRule_LITERAL = Pattern
 				.compile("^(?:(?:\\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$");
-		_allEscapedChar = "\\\\(" + ESCAPABLE + ")";
 	}
 
 	public static RegexPattern getInstance() {

@@ -191,7 +191,7 @@ public class DocParser {
 			}
 			container = lastChild;
 
- 			int match = RegexPattern.getInstance().matchAt(
+			int match = RegexPattern.getInstance().matchAt(
 					Pattern.compile("[^ ]"), line, offset);
 			if (match == -1) {
 				firstNonSpace = line.length();
@@ -322,7 +322,7 @@ public class DocParser {
 				container = addChild("ATXHeader", lineNumber, firstNonSpace);
 				container.setLevel(ATXmatch.group(0).trim().length());
 
- 				if (Pattern.compile("\\\\#").matcher(line.substring(offset))
+				if (Pattern.compile("\\\\#").matcher(line.substring(offset))
 						.find()) {
 					String tempLine = line.substring(offset).replaceAll(
 							"(?:(\\\\#) *#*| *#+) *$", "$1");
@@ -408,7 +408,7 @@ public class DocParser {
 			// ERROR: Line 454 JS, 1071 PY
 			// _lastLineBlank = false;
 			// Believe to be like this:
-			//container.setLastLineBlank(false);
+			// container.setLastLineBlank(false);
 			// ///
 
 			addLine(line, offset);
@@ -528,7 +528,7 @@ public class DocParser {
 		} else if (block.getTag().equals("IndentedCode")) {
 			String joinedString = CollectionUtils
 					.join(block.getStrings(), "\n");
- 			joinedString = joinedString.replaceAll("(\\n *)*$", "\n");
+			joinedString = joinedString.replaceAll("(\\n *)*$", "\n");
 			block.setStringContent(joinedString);
 		} else if (block.getTag().equals("FencedCode")) {
 			block.setInfo(RegexPattern.getInstance().getUnescape(
@@ -614,7 +614,7 @@ public class DocParser {
 		String s = "";
 
 		ArrayList<Block> levelOne = _doc.getChildren();
-		s += "|**** Document";
+		s += "|**** Document\n";
 		for (Block block : levelOne) {
 			s += Block.printBlock(2, block);
 		}

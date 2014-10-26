@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.jotterpad.commonmark.library.CollectionUtils;
+import com.jotterpad.commonmark.library.URLEscape;
 import com.jotterpad.commonmark.object.Block;
 import com.jotterpad.commonmark.object.BlocksContent;
 import com.jotterpad.commonmark.object.StringContent;
@@ -14,14 +15,13 @@ import com.jotterpad.commonmark.object.StringContent;
 public class HTMLRenderer {
 
 	private static String NONE = "";
-	private static String MAILTO = "mailto";
 	private static String NEWLINE = "\n";
 	private static ArrayList<String[]> ESCAPE_PAIRS = new ArrayList<String[]>();
 	static {
-		ESCAPE_PAIRS.add(0, new String[] { "[&]", "&amp;" });
-		ESCAPE_PAIRS.add(1, new String[] { "[<]", "&lt;" });
-		ESCAPE_PAIRS.add(2, new String[] { "[>]", "&gt;" });
-		ESCAPE_PAIRS.add(3, new String[] { "[']", "&quot;" });
+		ESCAPE_PAIRS.add(new String[] { "[&]", "&amp;" });
+		ESCAPE_PAIRS.add(new String[] { "[<]", "&lt;" });
+		ESCAPE_PAIRS.add(new String[] { "[>]", "&gt;" });
+		ESCAPE_PAIRS.add(new String[] { "[\"]", "&quot;" });
 	}
 
 	public HTMLRenderer() {
@@ -47,7 +47,7 @@ public class HTMLRenderer {
 		if (attribs.size() > 0) {
 			// TODO: Correct?
 			for (String[] attrib : attribs) {
-				result += " " + attrib[0] + "='" + attrib[1] + "'";
+				result += " " + attrib[0] + "=\"" + attrib[1] + "\"";
 			}
 		}
 		// TODO :Can shorten?
@@ -75,9 +75,10 @@ public class HTMLRenderer {
 	 * @return escaped string
 	 */
 	public String URLescape(String s) {
-		if (!s.contains(MAILTO) && !s.contains(MAILTO.toUpperCase())) {
-			String original = StringEscapeUtils.escapeHtml4(StringEscapeUtils
+		if (!s.contains("mailto") && !s.contains("MAILTO")) {
+			String original = URLEscape.escape(StringEscapeUtils
 					.unescapeHtml4(s));
+
 			String pattern = "[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)";
 			Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
 			Matcher m = p.matcher(original);
@@ -98,7 +99,8 @@ public class HTMLRenderer {
 	public String escape(String s, boolean preserveEntities) {
 		ArrayList<String[]> e;
 		if (preserveEntities) {
-			e = new ArrayList<String[]>(ESCAPE_PAIRS.subList(1, 3));
+			e = new ArrayList<String[]>(ESCAPE_PAIRS.subList(1,
+					ESCAPE_PAIRS.size()));
 			String original = "";
 			try {
 				original = StringEscapeUtils.unescapeHtml4(s);
@@ -138,18 +140,18 @@ public class HTMLRenderer {
 			return HTMLRenderer
 					.inTags("em", new ArrayList<String[]>(),
 							renderInlines(((BlocksContent) inline.getC())
-									.getContents()), false);
+									.getContents()));
 		else if (inline.getTag().equalsIgnoreCase("Strong"))
 			return HTMLRenderer
 					.inTags("strong", new ArrayList<String[]>(),
 							renderInlines(((BlocksContent) inline.getC())
-									.getContents()), false);
+									.getContents()));
 		else if (inline.getTag().equalsIgnoreCase("Html"))
 			return content;
 		else if (inline.getTag().equalsIgnoreCase("Entity")) {
 			if (((StringContent) inline.getC()).getContent().equals("&nbsp;"))
 				return " ";
-			return this.escape(content, true);
+			return escape(content, true);
 		} else if (inline.getTag().equalsIgnoreCase("Link")) {
 			attrs.add(new String[] { "href", URLescape(inline.getDestination()) });
 			if (!inline.getTitle().isEmpty() && !inline.getTitle().equals(NONE))
@@ -168,7 +170,7 @@ public class HTMLRenderer {
 						escape(inline.getTitle(), true) });
 			return inTags("img", attrs, NONE, true);
 		} else if (inline.getTag().equalsIgnoreCase("Code"))
-			return inTags("code", new ArrayList<String[]>(), content);
+			return inTags("code", new ArrayList<String[]>(), escape(content));
 		else {
 			System.out.print("Unknown inline type " + inline.getTag() + "\n");
 			return NONE;
@@ -187,11 +189,11 @@ public class HTMLRenderer {
 		ArrayList<String[]> attr = new ArrayList<String[]>();
 		String[] info_words = new String[0];
 		if (block.getTag().equalsIgnoreCase("Document")) {
-			String whole_doc = renderBlocks(block.getChildren());
-			if (whole_doc.equals(NONE))
+			String wholeDoc = renderBlocks(block.getChildren());
+			if (wholeDoc.equals(NONE))
 				return NONE;
 			else
-				return whole_doc + NEWLINE;
+				return wholeDoc + NEWLINE;
 		} else if (block.getTag().equalsIgnoreCase("Paragraph")) {
 			if (inTightList)
 				return renderInlines(block.getInlineContent());
@@ -213,13 +215,14 @@ public class HTMLRenderer {
 				tag = "ul";
 			else
 				tag = "ol";
-			// attr = [] if (not block.list_data.get('start')) or
-			// block.list_data[
-			// 'start'] == 1 else [['start', str(block.list_data['start'])]];
-			if (block.getListData().getStart() != 1) // TODO: the other and not
-														// condition??
+
+			if (block.getListData().getStart() == 0
+					|| block.getListData().getStart() == 1) {
+
+			} else {
 				attr.add(new String[] { "start",
 						String.valueOf(block.getListData().getStart()) });
+			}
 			return inTags(
 					tag,
 					attr,

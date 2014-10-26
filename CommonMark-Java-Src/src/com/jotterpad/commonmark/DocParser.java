@@ -325,13 +325,13 @@ public class DocParser {
 				if (Pattern.compile("\\\\#").matcher(line.substring(offset))
 						.find()) {
 					String tempLine = line.substring(offset).replaceAll(
-							"(?:(\\\\#) *#*| *#+) *$", "$1");
+							"(?:\\\\(#) *#*| *#+) *$", "$1");
 					ArrayList<String> strings = new ArrayList<String>();
 					strings.add(tempLine);
 					container.setStrings(strings);
 				} else {
 					String tempLine = line.substring(offset).replaceAll(
-							"(?:(\\\\#) *#*| *#+) *$", "");
+							"(?:\\\\(#) *#*| *#+) *$", "");
 					ArrayList<String> strings = new ArrayList<String>();
 					strings.add(tempLine);
 					container.setStrings(strings);
@@ -538,7 +538,8 @@ public class DocParser {
 			} else {
 				block.setStringContent(CollectionUtils.join(
 						new ArrayList<String>(block.getStrings().subList(1,
-								block.getStrings().size())), "\n"));
+								block.getStrings().size())), "\n")
+						+ "\n");
 			}
 		} else if (block.getTag().equals("List")) {
 			block.setTight(true);

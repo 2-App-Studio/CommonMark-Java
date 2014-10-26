@@ -247,8 +247,9 @@ public class InlineParser {
 							new BlocksContent(inlines.subList(delimPos + 1,
 									inlines.size())));
 					if (inlines.size() > 1) {
-						inlines = new ArrayList<Block>(inlines.subList(0,
-								delimPos + 1));
+						for(int x = delimPos + 1 ; x < inlines.size() ; x++) {
+							inlines.remove(inlines.size() - 1);
+						}
 					}
 					break;
 				} else {
@@ -268,8 +269,9 @@ public class InlineParser {
 							new BlocksContent(inlines.subList(delimPos + 1,
 									inlines.size())));
 					if (inlines.size() > 1) {
-						inlines = new ArrayList<Block>(inlines.subList(0,
-								delimPos + 1));
+						for(int x = delimPos + 1 ; x < inlines.size() ; x++) {
+							inlines.remove(inlines.size() - 1);
+						}
 					}
 					break;
 				} else {
@@ -308,8 +310,9 @@ public class InlineParser {
 																				// on
 																				// 362?
 						if (inlines.size() > 1) {
-							inlines = new ArrayList<Block>(inlines.subList(0,
-									delimPos + 1));
+							for(int x = delimPos + 1 ; x < inlines.size() ; x++) {
+								inlines.remove(inlines.size() - 1);
+							}
 						}
 						break;
 					} else {
@@ -647,7 +650,6 @@ public class InlineParser {
 	public int parseInline(ArrayList<Block> inlines) {
 		Character c = peek();
 		int res = 0;
-		System.out.println("PEEK: " + c + " " + _pos);
 
 		if (c != null) {
 			switch (c) {
@@ -665,7 +667,6 @@ public class InlineParser {
 				res = parseEmphasis(inlines);
 				break;
 			case '[':
-				System.out.println("PARSE LINK@ POS: " + _pos);
 				res = parseLink(inlines);
 				break;
 			case '!':

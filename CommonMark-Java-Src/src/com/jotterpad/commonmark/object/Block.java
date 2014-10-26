@@ -31,6 +31,15 @@ public class Block {
 		if (block.getC() instanceof StringContent) {
 			s += " " + ((StringContent) block.getC()).getContent();
 		}
+		if (block.getC() instanceof BlocksContent) {
+			ArrayList<Block> blocks = ((BlocksContent) block.getC())
+					.getContents();
+			for (Block b : blocks) {
+				if (b.getC() instanceof StringContent) {
+					s += " " + ((StringContent) b.getC()).getContent() + " | ";
+				}
+			}
+		}
 		if (!block.getStringContent().isEmpty()) {
 			s += " " + block.getStringContent();
 		}

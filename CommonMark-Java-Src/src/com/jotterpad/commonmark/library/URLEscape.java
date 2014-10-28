@@ -1,7 +1,9 @@
 package com.jotterpad.commonmark.library;
 
+import java.util.regex.Pattern;
+
 public class URLEscape {
-	
+
 	public static String escape(String input) {
 		StringBuilder resultStr = new StringBuilder();
 		for (char ch : input.toCharArray()) {
@@ -20,11 +22,13 @@ public class URLEscape {
 		return (char) (ch < 10 ? '0' + ch : 'A' + ch - 10);
 	}
 
-	private static boolean isUnsafe(char ch) {
-		if (" :/=*%?&)(#".indexOf(ch) >= 0)
+	public static boolean isUnsafe(char ch) {
+
+		if (":/=*%?&)(#.-_".indexOf(ch) >= 0
+				|| Pattern.compile("[a-z0-9]", Pattern.CASE_INSENSITIVE)
+						.matcher(String.valueOf(ch)).find())
 			return false;
-		if (ch > 128 || ch < 0)
+		else
 			return true;
-		return "$+,;@<>".indexOf(ch) >= 0;
 	}
 }

@@ -101,17 +101,17 @@ public class HTMLRenderer {
 		if (preserveEntities) {
 			e = new ArrayList<String[]>(ESCAPE_PAIRS.subList(1,
 					ESCAPE_PAIRS.size()));
-			String original = "";
+			String s1 = "";
 			try {
-				original = StringEscapeUtils.unescapeHtml4(s);
+				s1 = StringEscapeUtils.unescapeHtml4(s);
 			} catch (IllegalArgumentException e2) {
 				// Invalid Unicode codepoints. Writing Replacement code \uFFFD.
-				original = "\uFFFD";
+				s1 = "\uFFFD";
 			}
-			String pattern = "[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)";
-			Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-			Matcher m = p.matcher(original);
-			s = m.replaceAll("&amp;");
+
+			String pattern = "[&](?![#](x[a-fA-F0-9]{1,8}|[0-9]{1,8});|[a-zA-Z][a-z0-9]{1,31};)";
+			s = s1.replaceAll(pattern, "&amp;");
+
 		} else
 			e = ESCAPE_PAIRS;
 		for (String[] r : e)
@@ -158,12 +158,12 @@ public class HTMLRenderer {
 				attrs.add(new String[] { "title",
 						escape(inline.getTitle(), true) });
 			return HTMLRenderer.inTags("a", attrs,
-					renderInlines(inline.getLabel()));
+					renderInlines(inline.getLabels()));
 		} else if (inline.getTag().equalsIgnoreCase("Image")) {
 			attrs.add(new String[] { "src",
 					escape(inline.getDestination(), true) });
 			attrs.add(new String[] { "alt",
-					escape(renderInlines(inline.getLabel())) });
+					escape(renderInlines(inline.getLabels())) });
 			if (inline.getTitle() != null && !inline.getTitle().isEmpty()
 					&& !inline.getTitle().equals(NONE))
 				attrs.add(new String[] { "title",
@@ -244,9 +244,12 @@ public class HTMLRenderer {
 			if (block.getInfo() != null)
 				info_words = block.getInfo().split(" +"); // TODO: test regex
 															// split pattern
-			if (info_words.length != 0)
-				attr.add(new String[] { "class",
-						"language-" + escape(info_words[0], true) });
+			if (info_words.length != 0) {
+				String lang = escape(info_words[0], true);
+				if (!lang.isEmpty()) {
+					attr.add(new String[] { "class", "language-" + lang });
+				}
+			}
 			return inTags("pre", new ArrayList<String[]>(),
 					inTags("code", attr, escape(block.getStringContent())),
 					false);

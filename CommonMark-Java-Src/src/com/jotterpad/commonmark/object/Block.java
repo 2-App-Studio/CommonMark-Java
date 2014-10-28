@@ -2,6 +2,8 @@ package com.jotterpad.commonmark.object;
 
 import java.util.ArrayList;
 
+import com.jotterpad.commonmark.library.CollectionUtils;
+
 public class Block {
 
 	private String _tag, _destination, _stringContent, _title, _info;
@@ -19,6 +21,98 @@ public class Block {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+
+	public static void dumpAST(Block obj, int ind) {
+		String levels = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+		String indChar = ind != 0 ? (levels.substring(0, ind)) + "->" : "";
+		System.out.println(indChar + "[" + obj.getTag() + "]");
+
+		if (!obj.getTitle().isEmpty()) {
+			System.out.println("\t" + indChar + "Title: " + obj.getTitle());
+		}
+		if (!obj.getInfo().isEmpty()) {
+			System.out.println("\t" + indChar + "Info: " + obj.getInfo());
+		}
+		if (!obj.getDestination().isEmpty()) {
+			System.out
+					.println("\t" + indChar + "Info: " + obj.getDestination());
+		}
+		if (obj.isOpen()) {
+			System.out.println("\t" + indChar + "Open: "
+					+ String.valueOf(obj.isOpen()));
+		}
+		if (obj.isLastLineBlank()) {
+			System.out.println("\t" + indChar + "Last line blank: "
+					+ String.valueOf(obj.isLastLineBlank()));
+		}
+		if (obj.getStartLine() > 0) {
+			System.out.println("\t" + indChar + "Start line: "
+					+ obj.getStartLine());
+		}
+		if (obj.getStartColumn() > 0) {
+			System.out.println("\t" + indChar + "Start column: "
+					+ obj.getStartColumn());
+		}
+		if (obj.getEndLine() > 0) {
+			System.out
+					.println("\t" + indChar + "End line: " + obj.getEndLine());
+		}
+		if (!obj.getStringContent().isEmpty()) {
+			System.out.println("\t" + indChar + "String content: "
+					+ obj.getStringContent());
+		}
+		if (!obj.getInfo().isEmpty()) {
+			System.out.println("\t" + indChar + "Info: " + obj.getInfo());
+		}
+		if (obj.getStrings().size() > 0) {
+			System.out.println("\t" + indChar + "Strings['"
+					+ CollectionUtils.join(obj.getStrings(), "', '") + "'']");
+		}
+		if (obj.getC() != null) {
+			if (obj.getC() instanceof BlocksContent) {
+				System.out.println("\t" + indChar + "c: ");
+				ArrayList<Block> blocks = ((BlocksContent) obj.getC())
+						.getContents();
+				;
+				for (Block block : blocks) {
+					dumpAST(block, ind + 2);
+				}
+			} else {
+				System.out.println("\t" + indChar + "c: "
+						+ ((StringContent) obj.getC()).getContent());
+			}
+		}
+		if (obj.getLabels().size() > 0) {
+			System.out.println("\t" + indChar + "Label:");
+			for (Block block : obj.getLabels()) {
+				dumpAST(block, ind + 2);
+			}
+		}
+		if (obj.getListData() != null && obj.getListData().getType() != null) {
+			System.out.println("\t" + indChar + "List Data:");
+			System.out.println("\t\t" + indChar + "[type] = "
+					+ obj.getListData().getType());
+			if (obj.getListData() instanceof UnorderedListData
+					&& ((UnorderedListData) obj.getListData()).getBullet() != null) {
+				System.out.println("\t\t" + indChar + "[bullet_char] = "
+						+ ((UnorderedListData) obj.getListData()).getBullet());
+			}
+			//...
+			//...
+		}
+		if (obj.getInlineContent().size() > 0) {
+			System.out.println("\t" + indChar + "Inline content:");
+			for(Block block : obj.getInlineContent()) {
+				dumpAST(block, ind + 2);
+			}
+		}
+		if (obj.getChildren().size() > 0) {
+			System.out.println("\t" + indChar + "Children:");
+			for(Block block : obj.getChildren()) {
+				dumpAST(block, ind + 2);
+			}
+		}
 	}
 
 	public static String printBlock(int level, Block block) {
@@ -132,7 +226,7 @@ public class Block {
 		return _destination;
 	}
 
-	public ArrayList<Block> getLabel() {
+	public ArrayList<Block> getLabels() {
 		return _label;
 	}
 

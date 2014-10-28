@@ -167,10 +167,11 @@ public class InlineParser {
 
 	public Delim scanDelims(Character c) {
 		int numDelims = 0;
-		Character charBefore = null, charAfter = null;
+		String charBefore = null, charAfter = null;
 		int startPos = _pos;
 
-		charBefore = _pos == 0 ? '\n' : _subject.charAt(_pos - 1);
+		charBefore = _pos == 0 ? "\\n" : String.valueOf(_subject
+				.charAt(_pos - 1));
 
 		// TODO: Want to check for null?
 		while (peek() == c) {
@@ -179,22 +180,21 @@ public class InlineParser {
 		}
 
 		Character a = peek();
-		charAfter = a != null ? a : '\n';
+		charAfter = a != null ? String.valueOf(a) : "\\n";
 
-		// TODO: Correct? Check for whitespace
 		boolean canOpen = (numDelims > 0) && (numDelims <= 3)
-				&& (!Character.isWhitespace(charAfter));
+				&& (!Pattern.matches("\\s", charAfter));
 		boolean canClose = (numDelims > 0) && (numDelims <= 3)
-				&& (!Character.isWhitespace(charBefore));
+				&& (!Pattern.matches("\\s", charBefore));
 
 		if (c == '_') {
-			// TODO: Correct? Check for alphanumeric
 			canOpen = canOpen
-					&& (!(Character.isDigit(charBefore) && Character
-							.isLetter(charBefore)));
+					&& (!(Pattern.compile("[a-z0-9]", Pattern.CASE_INSENSITIVE)
+							.matcher(charBefore).matches()));
 			canClose = canClose
-					&& (!(Character.isDigit(charAfter) && Character
-							.isLetter(charAfter)));
+					&& (!(Pattern.compile("[a-z0-9]", Pattern.CASE_INSENSITIVE)
+							.matcher(charAfter).matches()));
+
 		}
 		_pos = startPos;
 
@@ -247,10 +247,12 @@ public class InlineParser {
 							new BlocksContent(inlines.subList(delimPos + 1,
 									inlines.size())));
 					if (inlines.size() > 1) {
-						for(int x = delimPos + 1 ; x < inlines.size() ; x++) {
+						int size = inlines.size();
+						for (int x = delimPos + 1; x < size; x++) {
 							inlines.remove(inlines.size() - 1);
 						}
 					}
+
 					break;
 				} else {
 					if (parseInline(inlines) == 0) {
@@ -269,7 +271,8 @@ public class InlineParser {
 							new BlocksContent(inlines.subList(delimPos + 1,
 									inlines.size())));
 					if (inlines.size() > 1) {
-						for(int x = delimPos + 1 ; x < inlines.size() ; x++) {
+						int size = inlines.size();
+						for (int x = delimPos + 1; x < size; x++) {
 							inlines.remove(inlines.size() - 1);
 						}
 					}
@@ -284,6 +287,7 @@ public class InlineParser {
 		} else if (numDelims == 3) {
 			while (true) {
 				res = scanDelims(c);
+
 				if (res.getNumDelims() >= 1 && res.getNumDelims() <= 3
 						&& res.getCanClose()
 						&& res.getNumDelims() != firstCloseDelims) {
@@ -310,7 +314,8 @@ public class InlineParser {
 																				// on
 																				// 362?
 						if (inlines.size() > 1) {
-							for(int x = delimPos + 1 ; x < inlines.size() ; x++) {
+							int size = inlines.size();
+							for (int x = delimPos + 1; x < size; x++) {
 								inlines.remove(inlines.size() - 1);
 							}
 						}
@@ -320,6 +325,8 @@ public class InlineParser {
 								"Str",
 								new StringContent(_subject.substring(
 										_pos - res.getNumDelims(), _pos))));
+						firstClose = inlines.size() - 1;
+						firstCloseDelims = res.getNumDelims();
 					}
 				} else {
 					if (parseInline(inlines) == 0) {
@@ -541,15 +548,6 @@ public class InlineParser {
 		}
 	}
 
-	// TODO:
-	// TODO:
-	// TODO:
-	// TODO:
-	// TODO:
-	// TODO:
-	// TODO:
-	// TODO:
-	// TODO:
 	public int parseNewLine(ArrayList<Block> inlines) {
 		if (peek() == '\n') {
 			_pos++;
@@ -562,7 +560,8 @@ public class InlineParser {
 					String replaceTo = content.replaceAll(" *$", "");
 					last.setC(new StringContent(replaceTo));
 					inlines.add(Block.makeBlock("Hardbreak"));
-				} else if (content.substring(content.length() - 1).equals(" ")) {
+				} else if (content.length() >= 1
+						&& content.substring(content.length() - 1).equals(" ")) {
 					last.setC(new StringContent(content.substring(0,
 							content.length() - 1)));
 					inlines.add(Block.makeBlock("Softbreak"));
@@ -683,6 +682,7 @@ public class InlineParser {
 				break;
 			}
 		}
+
 		if (res == 0) {
 			return parseString(inlines);
 		} else {

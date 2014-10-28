@@ -106,7 +106,8 @@ public class DocParser {
 	}
 
 	private boolean listsMatch(ListData listData, ListData itemData) {
-		boolean same = ((listData instanceof OrderedListData && itemData instanceof OrderedListData) || (listData instanceof UnorderedListData && itemData instanceof UnorderedListData));
+		boolean same = ((listData instanceof OrderedListData && itemData instanceof OrderedListData) || 
+				(listData instanceof UnorderedListData && itemData instanceof UnorderedListData));
 		if (!same) {
 			return false;
 		} else {
@@ -114,11 +115,11 @@ public class DocParser {
 			if (listData instanceof OrderedListData
 					&& itemData instanceof OrderedListData) {
 				same &= (((OrderedListData) listData).getDelim()
-						.equals(((OrderedListData) listData).getDelim()));
+						.equals(((OrderedListData) itemData).getDelim()));
 			} else if (listData instanceof UnorderedListData
 					&& itemData instanceof UnorderedListData) {
 				same &= (((UnorderedListData) listData).getBullet()
-						.equals(((UnorderedListData) listData).getBullet()));
+						.equals(((UnorderedListData) itemData).getBullet()));
 			}
 
 			return same;
@@ -421,6 +422,8 @@ public class DocParser {
 							.getTag().equals("ListItem")
 							&& container.getChildren().size() == 0 && container
 							.getStartLine() == lineNumber));
+			container.setLastLineBlank(isLastLineBlank);
+
 			Block cont = container;
 			while (cont.getParent() != null) {
 				cont.getParent().setLastLineBlank(false);

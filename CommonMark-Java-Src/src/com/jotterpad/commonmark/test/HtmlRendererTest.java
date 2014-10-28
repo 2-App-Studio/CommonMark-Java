@@ -22,14 +22,16 @@ public class HtmlRendererTest {
 
 	@Test
 	public void test() {
-
+		
+		
 		DocParser parser = new DocParser();
 		HTMLRenderer renderer = new HTMLRenderer();
 		Date date = new Date();
+				
 		try {
 			String markdown = resIn.getContent();
 			Block block = parser.parse(markdown);
-			System.out.println(parser.printParser());
+			Block.dumpAST(block, 0);
 			Date tempDate = new Date();
 			System.out.println("PARSE: "
 					+ (tempDate.getTime() - date.getTime()) + "ms");

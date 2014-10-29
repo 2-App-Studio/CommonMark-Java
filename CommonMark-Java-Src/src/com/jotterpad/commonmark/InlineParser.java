@@ -115,7 +115,8 @@ public class InlineParser {
 				inlines.add(Block.makeBlock("Hardbreak"));
 				_pos += 2;
 				return 2;
-			} else if (subj.length() > pos + 2
+				// Substring requires "="
+			} else if (subj.length() >= pos + 2
 					&& _regex.getEscapable()
 							.matcher(subj.substring(pos + 1, pos + 2)).find()) {
 				inlines.add(Block.makeBlock("Str",
@@ -681,6 +682,7 @@ public class InlineParser {
 				res = parseEntity(inlines);
 				break;
 			}
+		} else {
 		}
 
 		if (res == 0) {

@@ -106,8 +106,7 @@ public class DocParser {
 	}
 
 	private boolean listsMatch(ListData listData, ListData itemData) {
-		boolean same = ((listData instanceof OrderedListData && itemData instanceof OrderedListData) || 
-				(listData instanceof UnorderedListData && itemData instanceof UnorderedListData));
+		boolean same = ((listData instanceof OrderedListData && itemData instanceof OrderedListData) || (listData instanceof UnorderedListData && itemData instanceof UnorderedListData));
 		if (!same) {
 			return false;
 		} else {
@@ -531,7 +530,8 @@ public class DocParser {
 		} else if (block.getTag().equals("IndentedCode")) {
 			String joinedString = CollectionUtils
 					.join(block.getStrings(), "\n");
-			joinedString = joinedString.replaceAll("(\\n *)*$", "\n");
+			// TODO: Original Regex cannot work.
+			joinedString = joinedString.replaceFirst("\\s+$", "");
 			block.setStringContent(joinedString);
 		} else if (block.getTag().equals("FencedCode")) {
 			block.setInfo(RegexPattern.getInstance().getUnescape(

@@ -22,12 +22,11 @@ public class HtmlRendererTest {
 
 	@Test
 	public void test() {
-		
-		
+
 		DocParser parser = new DocParser();
 		HTMLRenderer renderer = new HTMLRenderer();
 		Date date = new Date();
-				
+
 		try {
 			String markdown = resIn.getContent();
 			Block block = parser.parse(markdown);

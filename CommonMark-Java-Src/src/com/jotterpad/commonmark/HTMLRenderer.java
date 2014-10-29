@@ -235,10 +235,8 @@ public class HTMLRenderer {
 			return inTags(tag, new ArrayList<String[]>(),
 					renderInlines(block.getInlineContent()));
 		} else if (block.getTag().equalsIgnoreCase("IndentedCode"))
-			return inTags(
-					"pre",
-					new ArrayList<String[]>(),
-					inTags("code", new ArrayList<String[]>(),
+			return HTMLRenderer.inTags("pre", new ArrayList<String[]>(),
+					HTMLRenderer.inTags("code", new ArrayList<String[]>(),
 							escape(block.getStringContent())), false);
 		else if (block.getTag().equalsIgnoreCase("FencedCode")) {
 			if (block.getInfo() != null)

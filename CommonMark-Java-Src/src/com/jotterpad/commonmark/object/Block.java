@@ -35,8 +35,7 @@ public class Block {
 			System.out.println("\t" + indChar + "Info: " + obj.getInfo());
 		}
 		if (!obj.getDestination().isEmpty()) {
-			System.out
-					.println("\t" + indChar + "Info: " + obj.getDestination());
+			System.out.println("\t" + indChar + "Destination: " + obj.getDestination());
 		}
 		if (obj.isOpen()) {
 			System.out.println("\t" + indChar + "Open: "
@@ -55,8 +54,7 @@ public class Block {
 					+ obj.getStartColumn());
 		}
 		if (obj.getEndLine() > 0) {
-			System.out
-					.println("\t" + indChar + "End line: " + obj.getEndLine());
+			System.out.println("\t" + indChar + "End line: " + obj.getEndLine());
 		}
 		if (!obj.getStringContent().isEmpty()) {
 			System.out.println("\t" + indChar + "String content: "
@@ -72,9 +70,7 @@ public class Block {
 		if (obj.getC() != null) {
 			if (obj.getC() instanceof BlocksContent) {
 				System.out.println("\t" + indChar + "c: ");
-				ArrayList<Block> blocks = ((BlocksContent) obj.getC())
-						.getContents();
-				;
+				ArrayList<Block> blocks = ((BlocksContent) obj.getC()).getContents();
 				for (Block block : blocks) {
 					dumpAST(block, ind + 2);
 				}
@@ -98,8 +94,19 @@ public class Block {
 				System.out.println("\t\t" + indChar + "[bullet_char] = "
 						+ ((UnorderedListData) obj.getListData()).getBullet());
 			}
-			//...
-			//...
+            if (obj.getListData() != null){ // int return, can't be null
+                System.out.println("\t\t" + indChar + "[start] = "
+                        + (obj.getListData()).getStart());
+                System.out.println("\t\t" + indChar + "[padding] = "
+                        + (obj.getListData()).getPadding());
+                System.out.println("\t\t" + indChar + "[marker_offset] = "
+                        + (obj.getListData()).getMarkerOffset());
+            }
+            if (obj.getListData() instanceof OrderedListData
+                    && (((OrderedListData) obj.getListData()).getDelim() != null)) {
+                System.out.println("\t\t" + indChar + "[delimiter] = "
+                        + ((OrderedListData) obj.getListData()).getDelim());
+            }
 		}
 		if (obj.getInlineContent().size() > 0) {
 			System.out.println("\t" + indChar + "Inline content:");

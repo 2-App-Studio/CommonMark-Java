@@ -40,7 +40,7 @@ public class RegexPatternTest {
 		assertEquals("    hello", regex.deTabLine("\thello"));
 		assertEquals("        hello", regex.deTabLine("\t\thello"));
 		assertEquals("        hello", regex.deTabLine("    \thello"));
-
+		assertEquals("hel    lo",  regex.deTabLine("hel\tlo"));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class RegexPatternTest {
 		assertTrue(regex.getHtmlTag().matcher("</br>").matches());
 		assertTrue(regex.getHtmlTag().matcher("<br />").matches());
 		assertTrue(regex.getHtmlTag().matcher("<br class=\"good\">").matches());
-
+		assertTrue(regex.getHtmlTag().matcher("<br style=\"padding:3px\">").matches());
 		assertFalse(regex.getHtmlTag().matcher("br").matches());
 		assertFalse(regex.getHtmlTag().matcher("<br").matches());
 		assertFalse(regex.getHtmlTag().matcher("<br<").matches());
@@ -62,7 +62,7 @@ public class RegexPatternTest {
 		RegexPattern regex = RegexPattern.getInstance();
 		assertTrue(regex.getHtmlBlockOpen().matcher("<h1>").matches());
 		assertTrue(regex.getHtmlBlockOpen().matcher("</h1>").matches());
-
+		assertFalse(regex.getHtmlBlockOpen().matcher("<h1").matches());
 		assertFalse(regex.getHtmlBlockOpen().matcher("h1").matches());
 		assertFalse(regex.getHtmlBlockOpen().matcher("<h1 >").matches());
 		assertFalse(regex.getHtmlBlockOpen().matcher("< h1>").matches());
@@ -78,7 +78,10 @@ public class RegexPatternTest {
 		assertTrue(regex.getEscapable().matcher("'").matches());
 		assertTrue(regex.getEscapable().matcher("^").matches());
 		assertTrue(regex.getEscapable().matcher("$").matches());
-
+		assertTrue(regex.getEscapable().matcher("%").matches());
+		assertTrue(regex.getEscapable().matcher("&").matches());
+		assertTrue(regex.getEscapable().matcher("#").matches());
+		assertTrue(regex.getEscapable().matcher("_").matches());
 		assertFalse(regex.getEscapable().matcher("0").matches());
 		assertFalse(regex.getEscapable().matcher("hello").matches());
 
@@ -90,7 +93,7 @@ public class RegexPatternTest {
 		assertTrue(regex.getEscapabledChar().matcher("\\'").matches());
 		assertTrue(regex.getEscapabledChar().matcher("\\^").matches());
 		assertTrue(regex.getEscapabledChar().matcher("\\$").matches());
-
+		assertTrue(regex.getEscapabledChar().matcher("\\/").matches());
 		assertFalse(regex.getEscapabledChar().matcher("\'").matches());
 		assertFalse(regex.getEscapabledChar().matcher("^").matches());
 

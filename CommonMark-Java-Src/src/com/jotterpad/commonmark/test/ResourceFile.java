@@ -1,6 +1,7 @@
 package com.jotterpad.commonmark.test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,8 +40,10 @@ public class ResourceFile extends ExternalResource {
 	}
 
 	public String getContent(String charSet) throws IOException {
-		InputStreamReader reader = new InputStreamReader(createInputStream(),
-				Charset.forName(charSet));
+		InputStream inputStream = new FileInputStream(_res);
+		InputStreamReader reader = new InputStreamReader(inputStream,"utf-8");
+//		InputStreamReader reader = new InputStreamReader(createInputStream(),
+//				Charset.forName(charSet));
 		char[] tmp = new char[4096];
 		StringBuilder b = new StringBuilder();
 		try {
@@ -68,7 +71,8 @@ public class ResourceFile extends ExternalResource {
 	@Override
 	protected void after() {
 		try {
-			_stream.close();
+			if (_stream != null)
+				_stream.close();
 		} catch (IOException e) {
 			// ignore
 		}

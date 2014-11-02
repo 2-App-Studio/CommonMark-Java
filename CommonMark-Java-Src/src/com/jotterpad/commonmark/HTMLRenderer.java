@@ -237,7 +237,7 @@ public class HTMLRenderer {
 		} else if (block.getTag().equalsIgnoreCase("IndentedCode"))
 			return HTMLRenderer.inTags("pre", new ArrayList<String[]>(),
 					HTMLRenderer.inTags("code", new ArrayList<String[]>(),
-							escape(block.getStringContent())), false);
+							escape(block.getStringContent())));
 		else if (block.getTag().equalsIgnoreCase("FencedCode")) {
 			if (block.getInfo() != null)
 				info_words = block.getInfo().split(" +"); // TODO: test regex
@@ -249,8 +249,7 @@ public class HTMLRenderer {
 				}
 			}
 			return inTags("pre", new ArrayList<String[]>(),
-					inTags("code", attr, escape(block.getStringContent())),
-					false);
+					inTags("code", attr, escape(block.getStringContent())));
 		} else if (block.getTag().equalsIgnoreCase("HtmlBlock"))
 			return block.getStringContent();
 		else if (block.getTag().equalsIgnoreCase("ReferenceDef"))

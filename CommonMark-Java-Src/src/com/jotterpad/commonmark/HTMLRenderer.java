@@ -13,10 +13,16 @@ import com.jotterpad.commonmark.object.BlocksContent;
 import com.jotterpad.commonmark.object.StringContent;
 
 public class HTMLRenderer {
-
-	private static String NONE = "";
-	private static String NEWLINE = "\n";
-	private static ArrayList<String[]> ESCAPE_PAIRS = new ArrayList<String[]>();
+	
+	public interface HTMLListener {
+		public String beforeTextRendered(String tag, String content);
+	}
+	
+	private static HTMLListener _listener;
+	
+	public static String NONE = "";
+	public static String NEWLINE = "\n";
+	public static ArrayList<String[]> ESCAPE_PAIRS = new ArrayList<String[]>();
 	static {
 		ESCAPE_PAIRS.add(new String[] { "[&]", "&amp;" });
 		ESCAPE_PAIRS.add(new String[] { "[<]", "&lt;" });
@@ -24,8 +30,8 @@ public class HTMLRenderer {
 		ESCAPE_PAIRS.add(new String[] { "[\"]", "&quot;" });
 	}
 
-	public HTMLRenderer() {
-
+	public HTMLRenderer(HTMLListener listener) {
+		_listener = listener;
 	}
 
 	/**
@@ -43,6 +49,10 @@ public class HTMLRenderer {
 	 */
 	public static String inTags(String tag, ArrayList<String[]> attribs,
 			String contents, boolean selfClosing) {
+		if (_listener != null) {
+			contents = _listener.beforeTextRendered(tag, contents);
+		}
+		
 		String result = "<" + tag;
 		if (attribs.size() > 0) {
 			// TODO: Correct?

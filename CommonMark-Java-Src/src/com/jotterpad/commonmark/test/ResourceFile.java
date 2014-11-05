@@ -40,10 +40,10 @@ public class ResourceFile extends ExternalResource {
 	}
 
 	public String getContent(String charSet) throws IOException {
-		InputStream inputStream = new FileInputStream(_res);
-		InputStreamReader reader = new InputStreamReader(inputStream,"utf-8");
-//		InputStreamReader reader = new InputStreamReader(createInputStream(),
-//				Charset.forName(charSet));
+//		InputStream inputStream = new FileInputStream(_res);
+//		InputStreamReader reader = new InputStreamReader(inputStream,"utf-8");
+		InputStreamReader reader = new InputStreamReader(createInputStream(),
+				Charset.forName(charSet));
 		char[] tmp = new char[4096];
 		StringBuilder b = new StringBuilder();
 		try {

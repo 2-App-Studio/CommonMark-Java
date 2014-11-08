@@ -21,7 +21,7 @@ public class HTMLRenderer {
 	private static HTMLListener _listener;
 	
 	public static String NONE = "";
-	public static String NEWLINE = "\n";
+	public static String NEWLINE = "\r\n";
 	public static ArrayList<String[]> ESCAPE_PAIRS = new ArrayList<String[]>();
 	static {
 		ESCAPE_PAIRS.add(new String[] { "[&]", "&amp;" });
@@ -30,6 +30,13 @@ public class HTMLRenderer {
 		ESCAPE_PAIRS.add(new String[] { "[\"]", "&quot;" });
 	}
 
+	/**
+	 * TODO: To consider more than 1 space or \t tab within content 
+	 * 	- should it remain with the spaces, or should it become a single space?
+	 * TODO: To consider the \n in the input, should the the \n be retained?
+	 * 	- i.e. Dillinger is showing the \n, but the original logic doesn't consider this
+	 */
+	
 	public HTMLRenderer(HTMLListener listener) {
 		_listener = listener;
 	}

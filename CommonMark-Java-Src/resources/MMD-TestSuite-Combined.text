@@ -1,0 +1,180 @@
+latex input: mmd-article-header
+Title: MultiMarkdown Autoreference Test  
+base header level: 2
+latex input: mmd-article-begin-doc
+latex footer: mmd-memoir-footer
+
+# 109&^*&#^() Must Start With Alpha #
+
+# Strip out &^% characters ^&*^ #
+
+
+# Special Cross Reference Cases#
+
+## 1 Cross-References: Special Characters!@#$%^&*()<>##
+
+And now, link to [1 Cross-References: Special Characters!@#$%^&*()<>][]
+
+
+Setext 1
+========
+
+
+Setext 2
+--------
+
+#Atx 1 #
+
+
+Link to [Setext 1].
+
+And [Setext 2].
+
+And [Atx 1].
+
+And [Atx 2] should fail.
+
+
+# Manual Header [label] #
+
+
+Manual Header 2 [label2]
+========================
+
+Manual Header 3 [label3]
+------------------------
+
+_____  
+
+latex input: mmd-article-header
+Title: MultiMarkdown Base Header Level Test  
+latex mode: memoir
+Base Header Level: 2
+latex input: mmd-article-begin-doc
+latex footer: mmd-memoir-footer
+  
+# This should be h2 #
+  
+## This should be h3 ##
+  
+  
+##### This should be h6 #####
+  
+###### This should be h6 in HTML h7 in LaTeX ######
+
+_____  
+
+latex input: mmd-article-header
+Title: MultiMarkdown BibTeX Test  
+BibTeX: bibtex
+latex input: mmd-article-begin-doc
+latex footer: mmd-memoir-footer
+
+This is a test of BibTeX Support.[#Knuth:1968]
+
+And a locator.[p. 123][#Knuth:1981]
+
+_____  
+
+latex input: mmd-article-header
+Title: MultiMarkdown Citation Test  
+CSS: http://fletcherpenney.net/css/document.css  
+BibTex: fake
+latex input: mmd-article-begin-doc
+latex footer: mmd-memoir-footer
+
+This is a test of citations[#first] for[^note] MultiMarkdown[#second].
+
+And an unlisted citation.[#Author:1988].
+
+And now some repeats...[^note2]
+
+This is a test of citations[p. 123][#first] for MultiMarkdown[#second].
+
+And an unlisted citation[#Author:1988].
+
+Unlisted with locator.[test][#Author:1988]
+
+Empty locator.[#first][]
+
+Consecutive citations.[#first][#second]
+
+Consecutive citations.[#first][][#second][]
+
+An "improperly" formed citation.[][#second]
+
+And an "improper" sequence.[][#first][][#second]
+
+
+[not cited][#third]
+
+
+[#first]: John Doe. *A Totally Fake Book*.  Vanity Press, 2006.
+
+[#second]: Jane Doe. *Another Totally Fake Book*.  Vanity Press, 2008.
+
+[#third]: Jim Doe. *Yet Another Fake Book*. Vanity Press, 2010.
+
+[^note]: A footnote for good measure.
+
+[^note2]: And another footnote
+
+_____  
+
+latex input: mmd-article-header
+Title: MultiMarkdown Definition List Test  
+latex input: mmd-article-begin-doc
+latex footer: mmd-memoir-footer
+
+Term 1
+Term 2
+:   Definition a
+
+Term 3
+:   Definition b
+:	Definition c
+
+
+Term 1
+
+:   This is a definition with two paragraphs. Lorem ipsum 
+    dolor sit amet, consectetuer adipiscing elit. Aliquam 
+    hendrerit mi posuere lectus.
+
+    Vestibulum enim wisi, viverra nec, fringilla in, laoreet
+    vitae, risus.
+
+:   Second definition for term 1, also wrapped in a paragraph
+    because of the blank line preceding it.
+
+Term 2
+
+:   This definition has a code block, a blockquote and a list.
+
+        code block.
+
+    > block quote
+    > on two lines.
+
+    1.  first list item
+    2.  second list item
+
+And this is a regular paragraph.
+
+_____  
+
+<p>latex input: mmd-article-header<br/>
+Title: MultiMarkdown Dutch Test<br/>
+quoteslanguage: dutch<br/>
+latex input: mmd-article-begin-doc<br/>
+latex footer: mmd-memoir-footer </p>
+<p>'this is a single quote'</p>
+<p>&quot;this is a double quote&quot;</p>
+<p>this isn't an apostrophe.</p>
+<p>this is an em --- dash</p>
+<p>this is an en -- dash</p>
+<p>and an ellipsis...</p>
+
+_____  
+
+

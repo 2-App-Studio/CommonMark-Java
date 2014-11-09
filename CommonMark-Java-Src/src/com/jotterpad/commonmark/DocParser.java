@@ -321,21 +321,13 @@ public class DocParser {
 						lastMatchedContainer);
 				container = addChild("ATXHeader", lineNumber, firstNonSpace);
 				container.setLevel(ATXmatch.group(0).trim().length());
+				
+				String tempLine = line.substring(offset)
+						.replaceAll("^ *#+ *$", "").replaceAll(" +#+ *$", "");
+				ArrayList<String> strings = new ArrayList<String>();
+				strings.add(tempLine);
+				container.setStrings(strings);
 
-				if (Pattern.compile("\\\\#").matcher(line.substring(offset))
-						.find()) {
-					String tempLine = line.substring(offset).replaceAll(
-							"(?:\\\\(#) *#*| *#+) *$", "$1");
-					ArrayList<String> strings = new ArrayList<String>();
-					strings.add(tempLine);
-					container.setStrings(strings);
-				} else {
-					String tempLine = line.substring(offset).replaceAll(
-							"(?:\\\\(#) *#*| *#+) *$", "");
-					ArrayList<String> strings = new ArrayList<String>();
-					strings.add(tempLine);
-					container.setStrings(strings);
-				}
 				break;
 			} else if (isFENmatch) {
 				int fenceLength = FENmatch.group(0).length();

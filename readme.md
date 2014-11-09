@@ -3,3 +3,7 @@ This is a pure Java port of jgm's [stmd.js](https://github.com/jgm/stmd), a Mark
 
 # Please Note
 This project is still in development.
+
+# Contributors
+* Yap Wei Rong (Kenny)
+* Tan Zhi Rong

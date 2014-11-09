@@ -5,12 +5,12 @@ latex input: mmd-article-begin-doc
 latex footer: mmd-memoir-footer</p>
 <h1>109&amp;^*&amp;#^() Must Start With Alpha</h1>
 <h1>Strip out &amp;^% characters ^&amp;*^</h1>
-<h1>Special Cross Reference Cases</h1>
-<h2>1 Cross-References: Special Characters!@#$%^&amp;*()&lt;&gt;</h2>
+<h1>Special Cross Reference Cases#</h1>
+<h2>1 Cross-References: Special Characters!@#$%^&amp;*()&lt;&gt;##</h2>
 <p>And now, link to [1 Cross-References: Special Characters!@#$%^&amp;*()&lt;&gt;][]</p>
 <h1>Setext 1</h1>
 <h2>Setext 2</h2>
-<h1>Atx 1</h1>
+<p>#Atx 1 #</p>
 <p>Link to [Setext 1].</p>
 <p>And [Setext 2].</p>
 <p>And [Atx 1].</p>
@@ -56,8 +56,8 @@ latex footer: mmd-memoir-footer</p>
 <p>An &quot;improperly&quot; formed citation.[][#second]</p>
 <p>And an &quot;improper&quot; sequence.[][#first][][#second]</p>
 <p>[not cited][#third]</p>
-<p>[#first]: John Doe. <em>A Totally Fake Book</em>. Vanity Press, 2006.</p>
-<p>[#second]: Jane Doe. <em>Another Totally Fake Book</em>. Vanity Press, 2008.</p>
+<p>[#first]: John Doe. <em>A Totally Fake Book</em>.  Vanity Press, 2006.</p>
+<p>[#second]: Jane Doe. <em>Another Totally Fake Book</em>.  Vanity Press, 2008.</p>
 <p>[#third]: Jim Doe. <em>Yet Another Fake Book</em>. Vanity Press, 2010.</p>
 <p>[^note]: A footnote for good measure.</p>
 <p>[^note2]: And another footnote</p>
@@ -68,24 +68,26 @@ latex input: mmd-article-begin-doc
 latex footer: mmd-memoir-footer</p>
 <p>Term 1
 Term 2
-: Definition a</p>
+:   Definition a</p>
 <p>Term 3
-: Definition b
-: Definition c</p>
+:   Definition b
+:   Definition c</p>
 <p>Term 1</p>
-<p>: This is a definition with two paragraphs. Lorem ipsum
- dolor sit amet, consectetuer adipiscing elit. Aliquam
- hendrerit mi posuere lectus.</p>
+<p>:   This is a definition with two paragraphs. Lorem ipsum
+dolor sit amet, consectetuer adipiscing elit. Aliquam
+hendrerit mi posuere lectus.</p>
 <pre><code>Vestibulum enim wisi, viverra nec, fringilla in, laoreet
 vitae, risus.
 </code></pre>
-<p>: Second definition for term 1, also wrapped in a paragraph
- because of the blank line preceding it.</p>
+<p>:   Second definition for term 1, also wrapped in a paragraph
+because of the blank line preceding it.</p>
 <p>Term 2</p>
-<p>: This definition has a code block, a blockquote and a list.</p>
+<p>:   This definition has a code block, a blockquote and a list.</p>
 <pre><code>    code block.
+
 &gt; block quote
 &gt; on two lines.
+
 1.  first list item
 2.  second list item
 </code></pre>
@@ -102,4 +104,348 @@ latex footer: mmd-memoir-footer </p>
 <p>this is an em --- dash</p>
 <p>this is an en -- dash</p>
 <p>and an ellipsis...</p>
+<hr />
+<p>latex input: mmd-article-header<br />
+Title: Email Test<br />
+latex input: mmd-article-begin-doc<br />
+latex footer: mmd-memoir-footer</p>
+<p>Link: <a href="mailto:user67@example.com">user67@example.com</a>.</p>
+<ul>
+<li>In a list?</li>
+<li><a href="mailto:user67@example.com">user67@example.com</a></li>
+<li>It should.</li>
+</ul>
+<blockquote>
+<p>Blockquoted: <a href="mailto:user67@example.com">user67@example.com</a></p>
+</blockquote>
+<p>Auto-links should not occur here: <code>&lt;user67@example.com&gt;</code></p>
+<pre><code>or here: &lt;user67@example.com&gt;
+</code></pre>
+<p>And with the mailto bit:</p>
+<p>Link: <a href="mailto:user67@example.com">mailto:user67@example.com</a>.</p>
+<ul>
+<li>In a list?</li>
+<li><a href="mailto:user67@example.com">mailto:user67@example.com</a></li>
+<li>It should.</li>
+</ul>
+<blockquote>
+<p>Blockquoted: <a href="mailto:user67@example.com">mailto:user67@example.com</a></p>
+</blockquote>
+<p>Auto-links should not occur here: <code>&lt;mailto:user67@example.com&gt;</code></p>
+<pre><code>or here: &lt;mailto:user67@example.com&gt;
+</code></pre>
+<hr />
+<p>latex input:    mmd-article-header<br />
+Title:          MultiMarkdown Error Test<br />
+latex input:    mmd-article-begin-doc<br />
+latex footer:   mmd-memoir-footer</p>
+<p>This document contains &quot;errors&quot; - the output shouldn't match what was
+intended, but it shouldn't crash MMD.</p>
+<p>This is a missing link reference [some text][missing] and ![missing image][missing2].</p>
+<hr />
+<p>latex input:    mmd-article-header<br />
+Title:          MultiMarkdown French Test<br />
+quoteslanguage: french<br />
+latex input:    mmd-article-begin-doc<br />
+latex footer:   mmd-memoir-footer</p>
+<p>'this is a single quote'</p>
+<p>&quot;this is a double quote&quot;</p>
+<p>this isn't an apostrophe.</p>
+<p>this is an em --- dash</p>
+<p>this is an en -- dash</p>
+<p>and an ellipsis...</p>
+<hr />
+<p>latex input:        mmd-article-header
+Title:              MultiMarkdown Glossary Test<br />
+CSS:                http://fletcherpenney.net/css/document.css<br />
+latex input:        mmd-article-begin-doc
+latex footer:       mmd-memoir-footer</p>
+<p>MultiMarkdown has a special format for footnotes that should represent
+glossary terms. This doesn't make much difference in XHTML (because there is
+no such thing as a glossary in XHTML), but can be used to generate a glossary
+within LaTeX documents.</p>
+<p>For example, let's have an entry for <code>glossary</code>.[^glossary] And what about
+ampersands?[^amp]</p>
+<p>Since we want the ampersand entry to be sorted with the a's, and not with
+symbols, we put in the optional sort key <code>ampersand</code> to control sorting.</p>
+<pre><code>[^glossary]: glossary: Glossary 
+    A section at the end ...
+    
+[^amp]: glossary: &amp; (ampersand)
+    A punctuation mark ...
+</code></pre>
+<p>[^glossary]: glossary: Glossary
+A section at the end ...</p>
+<p>[^amp]: glossary: &amp; (ampersand)
+A punctuation mark ...</p>
+<hr />
+<p>latex input:    mmd-article-header<br />
+Title:          MultiMarkdown Footer Test<br />
+latex input:    mmd-article-begin-doc<br />
+latex footer:   mmd-memoir-footer</p>
+<p>Here is some text containing a footnote.[^somesamplefootnote]</p>
+<blockquote>
+<p>And here is a footnote within a blockquote, should be labelled #2.[^secondnote]</p>
+</blockquote>
+<p>And this is a codeblock, that should not be a footnote:</p>
+<pre><code>This is code.[^somesamplefootnote]
+</code></pre>
+<p>And this is a short footnote for testing.<a href="Finis">^shortnote</a></p>
+<p>And now, reuse a footnote.<a href="Finis">^shortnote</a></p>
+<p>[^somesamplefootnote]: Here is the text of the footnote itself. It also has a <a href="http://somelink.com">link</a>.</p>
+<p>[^secondnote]: Note # 2.</p>
+<hr />
+<p>latex input:    mmd-article-header<br />
+Title:          Line Break Test<br />
+latex input:    mmd-article-begin-doc<br />
+latex footer:   mmd-memoir-footer</p>
+<p>This is a paragraph.
+This is the same paragraph.</p>
+<p>New paragraph.<br />
+Second line in same paragraph.</p>
+<p>New paragraph.<br />
+Second line in same paragraph with linebreak at end.</p>
+<hr />
+<p>latex input:    mmd-article-header<br />
+Title:          MMD List Parsing Test<br />
+latex input:    mmd-article-begin-doc<br />
+latex footer:   mmd-memoir-footer</p>
+<ul>
+<li><p>Item 1</p>
+<p>Second paragraph of item 1.
+The following blank line has 4 spaces.</p></li>
+</ul>
+<p>Paragraph following the list that shouldn't be part of the list item.</p>
+<hr />
+<p>latex input:        mmd-article-header<br />
+Title:              MultiMarkdown Headers Test<br />
+latex mode:         memoir<br />
+Base Header Level:  2<br />
+latex input:        mmd-article-begin-doc<br />
+latex footer:       mmd-memoir-footer</p>
+<h2>Normal Header</h2>
+<p>plain text</p>
+<h2>Normal Header with trailing space</h2>
+<h1>Normal Header with trailing space</h1>
+<p>plain text</p>
+<h2>Header with <a href="http://www.google.com">Link</a></h2>
+<p>plain text</p>
+<h2>Header with <a href="http://www.google.com">Link</a></h2>
+<p>and more plain text</p>
+<h2>Header with <a href="http://www.google.com">Link</a> and space</h2>
+<p>and more plain text</p>
+<p>The following should still be detected as headers:</p>
+<h1>Broken label [ text [</h1>
+<h2>Test Header 2 and [label]</h2>
+<h2>Broken Reference Link [label] [label2]</h2>
+<h2>Reference link not label <a href="http://example.com/">label</a></h2>
+<h2>Link <a href="http://example.net/">not label</a></h2>
+<p>And link to [label2] and <a href="http://example.com/">label1</a> and [label].</p>
+<hr />
+<p>http://www.example.net/</p>
+<p>This should not be treated as metadata.</p>
+<hr />
+<p>latex input:    mmd-article-header<br />
+Title:  MultiMarkdown Sanity Test<br />
+quoteslanguage: english<br />
+latex input:    mmd-article-begin-doc<br />
+latex footer:   mmd-memoir-footer</p>
+<h1>Section</h1>
+<p>Sanity check by Jonathan Coulombe</p>
+<p>A Reference to [Section]
+A Citation[#Citation]
+A Figure <a href="file.png">figure</a>
+A Table [table]
+A Link <a href="www.com">link</a>
+A Nowhere [Nowhere]</p>
+<p>B Reference to [][Section]
+B Citation[][#Citation]</p>
+<!--B Figure [][figure]-->
+B Table [][table]
+<!--B Link [][link]-->
+B Nowhere [][Nowhere]
+<p>C Reference to [Section][]
+C Citation[#Citation][]
+C Figure <a href="file.png">figure</a>
+C Table [table][]
+C Link <a href="www.com">link</a>
+C Nowhere [Nowhere][]</p>
+<p>D Reference to [option][Section]
+D Citation[option][#Citation]
+D Figure <a href="file.png">option</a>
+D Table [option][table]
+D Link <a href="www.com">option</a>
+D Nowhere [option][Nowhere]</p>
+<p>E Reference to [Section][option]
+E Citation[#Citation][option]
+E Figure [figure][option]
+E Table [table][option]
+E Link [link][option]
+E Nowhere [Nowhere][option]</p>
+<p>F Reference to <a href="Section">Section</a>
+F Citation<a href="Citation">#Citation</a>
+F Figure <a href="figure">figure</a>
+F Table <a href="table">table</a>
+F Link <a href="link">link</a>
+F Nowhere <a href="nowhere">Nowhere</a></p>
+<!--G Reference to [](Section)-->
+<!--G Citation[](Citation)-->
+<!--G Figure [](figure)-->
+<!--G Table [](table)-->
+<!--G Link [](link)-->
+<!--G Nowhere [](nowhere)-->
+<p>H Reference to <a href="#Section"></a>
+H Citation<a href="#Citation"></a>
+H Figure <a href="#figure"></a>
+H Table <a href="#table"></a>
+H Link <a href="#link"></a>
+H Nowhere <a href="#nowhere"></a></p>
+<p><img src="file.png" alt="figure" /></p>
+<p>[table]
+| a | b |
+|---|---|
+| x | y |</p>
+<hr />
+<p>latex input:        mmd-article-header<br />
+Title:              Markdown in HTML Test<br />
+latex mode:         memoir<br />
+Base Header Level:  2<br />
+latex input:        mmd-article-begin-doc<br />
+latex footer:       mmd-memoir-footer</p>
+<div>This is *not* Markdown **encoded**.</div>
+<div markdown=1>This *is* Markdown **encoded**.</div>
+<div markdown="1">This *is* Markdown **encoded**.</div>
+<div markdown = 1>This *is* Markdown **encoded**.</div>
+<div markdown = "1">This *is* Markdown **encoded**.</div>
+<div markdown = " 1 " >This *is* Markdown **encoded**.</div>
+<hr />
+<p>latex input:    mmd-article-header
+Title:          MultiMarkdown Math Example<br />
+latex input:    mmd-article-begin-doc
+latex footer:   mmd-memoir-footer
+xhtml header:   <script type="text/javascript" src="http://localhost/~fletcher/math/mathjax/MathJax.js"></script></p>
+<p>An example of math within a paragraph --- \({e}^{i\pi }+1=0\) --- easy
+enough.</p>
+<p>And an equation on it's own:</p>
+<p>\[ {x}_{1,2}=\frac{-b\pm \sqrt{{b}^{2}-4ac}}{2a} \]</p>
+<p>That's it.</p>
+<hr />
+<p>latex input:    mmd-article-header<br />
+Title:          This should be a <title> element
+Author:         This should be the author
+latex input:    inputthisfile
+bibtex:         bibliographyfile
+date:           January 1, 2011
+CSS:            http://fletcherpenney.net/css/document.css
+empty metadata:
+XHTML HEADER:   <meta name="testing" 
+content="This test should fail in LaTeX from XSLT"/>
+latex input:    mmd-article-begin-doc<br />
+latex footer:   mmd-memoir-footer</p>
+<p>And this should be the main text.</p>
+<hr />
+<p>latex input:        mmd-article-header
+Title:              MultiMarkdown Table Test<br />
+latex input:        mmd-article-begin-doc
+latex footer:       mmd-memoir-footer</p>
+<p>|            |             Grouping             ||<br />
+First Header |    Second Header   | Third Header |<br />
+| ---------- | :----------------: | -----------: |<br />
+Content      |           <em>Long Cell</em>            ||<br />
+Content      |      <strong>Cell</strong>      |         Cell |</p>
+<p>New section  |        More        |         Data |<br />
+And more     | With an escaped '|'             ||<br />
+[Prototype table caption][Prototype table]</p>
+<p>And this is a link to the [Prototype table].</p>
+<p>And now a table with only a caption.</p>
+<p>|            |             Grouping             ||<br />
+First Header |    Second Header   | Third Header |<br />
+| ---------- | :----------------: | -----------: |<br />
+Content      |           <em>Long Cell</em>            ||<br />
+Content      |      <strong>Cell</strong>      |         Cell |</p>
+<p>New section  |        More        |         Data |<br />
+And more     | With an escaped '|'             ||<br />
+[Caption but no label]</p>
+<p>And a link to the second [table][Caption but no label].</p>
+<p>And two tables in close proximity:</p>
+<p>[MultiMarkdown vs. Crayons]<br />
+| Features                          | MultiMarkdown |  Crayons |<br />
+----------------------------------- | :-----------: | :------: |<br />
+Melts in warm places                |       No      |    Yes   |<br />
+Mistakes can be easily fixed        |      Yes      |    No    |<br />
+Easy to copy documents for friends  |      Yes      |    No    |<br />
+Fun at parties                      |  No | Why not? |</p>
+<p>Minimum markup1 for maximum quality? |      Yes      |    No    |</p>
+<p>[MultiMarkdown vs. Crayons2]<br />
+| Features                          | MultiMarkdown |  Crayons |<br />
+----------------------------------- | :-----------: | :------: |<br />
+Melts in warm places                |       No      |    Yes   |<br />
+Mistakes can be easily fixed        |      Yes      |    No    |<br />
+Easy to copy documents for friends  |      Yes      |    No    |<br />
+Fun at parties                      |  No | Why not? |</p>
+<p>Minimum markup2 for maximum quality? |      Yes      |    No    |</p>
+<p>[Caption only]<br />
+Col 1 | Col 2<br />
+----- | -----<br />
+One   | Two</p>
+<p>[Line Wrapping Test]<br />
+| Long Cell                         | MultiMarkdown |  Crayons |<br />
+----------------------------------+ | :-----------: | :------: |<br />
+Melts in warm places                |       No      |    Yes   |<br />
+Mistakes can be easily fixed        |      Yes      |    No    |<br />
+Easy to copy documents for friends with some extra words to try and force a line break in every output format to test the wrapping feature  |      Yes      |    No    |<br />
+Fun at parties                      |  No           | Why not? |</p>
+<hr />
+<p>foo:    foo-test
+bar:    bar-test</p>
+<h1>test heading [%foo]</h1>
+<h1>test heading [foo]</h1>
+<h1>Tables</h1>
+<p>|            |             Grouping             ||<br />
+First Header |    Second Header   | Third Header |<br />
+| ---------- | :----------------: | -----------: |<br />
+Content      |           <em>Long Cell</em>            ||<br />
+Content      |      <strong>Cell</strong>      |         Cell |</p>
+<p>New section  |        More        |         Data |<br />
+And more     | With an escaped '|'             ||<br />
+[Prototype table caption [%foo]]</p>
+<hr />
+<p>latex input:        mmd-article-header<br />
+Title:              SmartQuotes Test<br />
+latex input:        mmd-article-begin-doc<br />
+latex footer:       mmd-memoir-footer</p>
+<p>Some rather complicated tests for smart quotes with non-ascii input.</p>
+<p>l'année l'année</p>
+<p>l'été l'année</p>
+<p>l'été l'été</p>
+<p>l'année l'été</p>
+<p>&quot;Smart&quot; 'quote'</p>
+<p>An escaped '|'</p>
+<p>Another test of smart '.quotes'</p>
+<p>And again &quot;.quotes&quot;</p>
+<hr />
+<p>latex input:        mmd-article-header<br />
+Title:              Link Attributes Test<br />
+latex input:        mmd-article-begin-doc<br />
+latex footer:       mmd-memoir-footer</p>
+<p>This is a formatted ![image][] and a <a href="www.com">link</a> with attributes.</p>
+<p>![image2]</p>
+<p>![image3]</p>
+<p>![image4]</p>
+<p>And <a href="www.com">the link</a>, <a href="www.com">link</a> , and <a href="www.com"></a> again.</p>
+<p><a href="www.com">link</a></p>
+<p><a href="www.com">the link</a></p>
+<p>[image]: http://path.to/image &quot;Image title&quot; width=&quot;40px&quot; height=&quot;400px&quot;
+[image2]: http://path.to/image &quot;Image title&quot; height=&quot;400px&quot;
+[image3]: http://path.to/image &quot;Image title&quot; width=&quot;40px&quot;
+[image4]: http://path.to/image &quot;Image title&quot;
+<a href="www.com">link</a>: http://path.to/link.html &quot;Some Link&quot; class=external
+style=&quot;border: solid black 1px;&quot;</p>
+<p>Test various identifiers:</p>
+<p><a href="http://path.to/link-a.html">link-a</a></p>
+<p><a href="http://path.to/link-1.html">link-1</a></p>
+<p><a href="http://path.to/link--2.html">link--2</a></p>
+<p><a href="http://path.to/link--a.html">link--a</a></p>
+<p><a href="http://path.to/link---1.html">link---1</a></p>
+<p>Test link and markup <img src="http://path.to/image" alt="and this but not that" title="Test *this* and **this**" /></p>
 <hr />

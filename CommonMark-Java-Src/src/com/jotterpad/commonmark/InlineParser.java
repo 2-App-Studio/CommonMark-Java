@@ -610,8 +610,8 @@ public class InlineParser {
 			rawLabel = _subject.substring(0, matchChars);
 		}
 
-		char test = peek();
-		if (test == ':') {
+		Character test = peek();
+		if (test != null && test == ':') {
 			_pos++;
 		} else {
 			_pos = startPos;

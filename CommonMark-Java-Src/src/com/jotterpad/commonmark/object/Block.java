@@ -5,8 +5,18 @@ import java.util.ArrayList;
 import com.jotterpad.commonmark.library.CollectionUtils;
 
 public class Block {
-
-	private String _tag, _destination, _stringContent, _title, _info;
+	
+	public static enum TAG {
+		ATXHEADER, BLOCKQUOTE, CODE, DOCUMENT, 
+		EMPH, ENTITY, FENCEDCODE, 
+		HARDBREAK, HORIZONTALRULE, HTML, HTMLBLOCK, 
+		IMAGE, INDENTEDCODE, LINK, LIST, LISTITEM, 
+		PARAGRAPH, REFERENCEDEF, 
+		SETEXTHEADER, SOFTBREAK, STR, STRONG;
+	}
+	
+	private TAG _tag;
+	private String _destination, _stringContent, _title, _info;
 	private Content _c;
 	private boolean _isOpen, _lastLineBlank, _tight;
 	private Block _parent;
@@ -169,7 +179,7 @@ public class Block {
 		return s;
 	}
 
-	private Block(String tag, Content c, String destination,
+	private Block(TAG tag, Content c, String destination,
 			ArrayList<Block> label, int startLine, int startColumn, String title) {
 		_tag = tag;
 		_c = c;
@@ -196,32 +206,32 @@ public class Block {
 		_level = 0;
 	}
 
-	public static Block makeBlock(String tag) {
+	public static Block makeBlock(TAG tag) {
 		return new Block(tag, new StringContent(""), "",
 				new ArrayList<Block>(), -1, -1, "");
 	}
 
-	public static Block makeBlock(String tag, Content c) {
+	public static Block makeBlock(TAG tag, Content c) {
 		return new Block(tag, c, "", new ArrayList<Block>(), -1, -1, "");
 	}
 
-	public static Block makeBlock(String tag, String dest, String title,
+	public static Block makeBlock(TAG tag, String dest, String title,
 			ArrayList<Block> label) {
 		return new Block(tag, new StringContent(""), dest, label, -1, -1, title);
 	}
 
-	public static Block makeBlock(String tag, ArrayList<Block> label,
+	public static Block makeBlock(TAG tag, ArrayList<Block> label,
 			String destination) {
 		return new Block(tag, new StringContent(""), destination, label, -1,
 				-1, "");
 	}
 
-	public static Block makeBlock(String tag, int startLine, int startColumn) {
+	public static Block makeBlock(TAG tag, int startLine, int startColumn) {
 		return new Block(tag, new StringContent(""), "",
 				new ArrayList<Block>(), startLine, startColumn, "");
 	}
 
-	public String getTag() {
+	public TAG getTag() {
 		return _tag;
 	}
 
@@ -309,7 +319,7 @@ public class Block {
 		return _level;
 	}
 
-	public void setTag(String tag) {
+	public void setTag(TAG tag) {
 		this._tag = tag;
 	}
 

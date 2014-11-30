@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.jotterpad.commonmark.object.Block;
+import com.jotterpad.commonmark.object.Block.TAG;
 import com.jotterpad.commonmark.object.BlocksContent;
 import com.jotterpad.commonmark.object.Delim;
 import com.jotterpad.commonmark.object.RefMapItem;
@@ -95,12 +96,12 @@ public class InlineParser {
 						_pos - ticks.length());
 				c = c.replaceAll("[ \\n]+", " "); // Originally Literal Regex
 				c = c.trim();
-				inlines.add(Block.makeBlock("Code", new StringContent(c)));
+				inlines.add(Block.makeBlock(TAG.CODE, new StringContent(c)));
 				return _pos - startPos;
 			}
 			match = match("`+", Pattern.MULTILINE);
 		}
-		inlines.add(Block.makeBlock("Str", new StringContent(ticks)));
+		inlines.add(Block.makeBlock(TAG.STR, new StringContent(ticks)));
 		_pos = afterOpenTicks;
 
 		return _pos - startPos;
@@ -112,19 +113,19 @@ public class InlineParser {
 
 		if (subj.length() > pos && subj.charAt(pos) == '\\') {
 			if (subj.length() > pos + 1 && subj.charAt(pos + 1) == '\n') {
-				inlines.add(Block.makeBlock("Hardbreak"));
+				inlines.add(Block.makeBlock(TAG.HARDBREAK));
 				_pos += 2;
 				return 2;
 				// Substring requires "="
 			} else if (subj.length() >= pos + 2
 					&& _regex.getEscapable()
 							.matcher(subj.substring(pos + 1, pos + 2)).find()) {
-				inlines.add(Block.makeBlock("Str",
+				inlines.add(Block.makeBlock(TAG.STR,
 						new StringContent(subj.substring(pos + 1, pos + 2))));
 				_pos += 2;
 				return 2;
 			} else {
-				inlines.add(Block.makeBlock("Str", new StringContent("\\")));
+				inlines.add(Block.makeBlock(TAG.STR, new StringContent("\\")));
 				_pos += 1;
 				return 1;
 			}
@@ -142,14 +143,14 @@ public class InlineParser {
 		if (m != null) {
 			String dest = m.substring(1, m.length() - 1);
 			ArrayList<Block> label = new ArrayList<Block>();
-			label.add(Block.makeBlock("Str", new StringContent(dest)));
-			inlines.add(Block.makeBlock("Link", label, "mailto:" + dest));
+			label.add(Block.makeBlock(TAG.STR, new StringContent(dest)));
+			inlines.add(Block.makeBlock(TAG.LINK, label, "mailto:" + dest));
 			return m.length();
 		} else if (m2 != null) {
 			String dest2 = m2.substring(1, m2.length() - 1);
 			ArrayList<Block> label = new ArrayList<Block>();
-			label.add(Block.makeBlock("Str", new StringContent(dest2)));
-			inlines.add(Block.makeBlock("Link", label, dest2));
+			label.add(Block.makeBlock(TAG.STR, new StringContent(dest2)));
+			inlines.add(Block.makeBlock(TAG.LINK, label, dest2));
 			return m2.length();
 		} else {
 			return 0;
@@ -159,7 +160,7 @@ public class InlineParser {
 	public int parseHtmlTag(ArrayList<Block> inlines) {
 		String m = match(_regex.getHtmlTag());
 		if (m != null) {
-			inlines.add(Block.makeBlock("Html", new StringContent(m)));
+			inlines.add(Block.makeBlock(TAG.HTML, new StringContent(m)));
 			return m.length();
 		} else {
 			return 0;
@@ -220,12 +221,12 @@ public class InlineParser {
 
 		if (startPos > 0) {
 			inlines.add(Block.makeBlock(
-					"Str",
+					TAG.STR,
 					new StringContent(_subject.substring(_pos - numDelims,
 							numDelims + startPos))));
 		} else {
 			inlines.add(Block.makeBlock(
-					"Str",
+					TAG.STR,
 					new StringContent(_subject.substring(_pos - numDelims,
 							numDelims))));
 		}
@@ -243,7 +244,7 @@ public class InlineParser {
 				res = scanDelims(c);
 				if (res.getNumDelims() >= 1 && res.getCanClose()) {
 					_pos++;
-					inlines.get(delimPos).setTag("Emph");
+					inlines.get(delimPos).setTag(TAG.EMPH);
 					inlines.get(delimPos).setC(
 							new BlocksContent(inlines.subList(delimPos + 1,
 									inlines.size())));
@@ -267,7 +268,7 @@ public class InlineParser {
 				res = scanDelims(c);
 				if (res.getNumDelims() >= 2 && res.getCanClose()) {
 					_pos += 2;
-					inlines.get(delimPos).setTag("Strong");
+					inlines.get(delimPos).setTag(TAG.STRONG);
 					inlines.get(delimPos).setC(
 							new BlocksContent(inlines.subList(delimPos + 1,
 									inlines.size())));
@@ -302,10 +303,10 @@ public class InlineParser {
 					_pos += res.getNumDelims();
 
 					if (firstClose > 0) {
-						String tag = firstCloseDelims == 1 ? "Strong" : "Emph";
+						TAG tag = firstCloseDelims == 1 ? TAG.STRONG : TAG.EMPH;
 						inlines.get(delimPos).setTag(tag);
 
-						String temp = firstCloseDelims == 1 ? "Emph" : "Strong";
+						TAG temp = firstCloseDelims == 1 ? TAG.EMPH : TAG.STRONG;
 						ArrayList<Block> blocks = new ArrayList<Block>();
 						blocks.add(Block.makeBlock(temp, new BlocksContent(
 								inlines.subList(delimPos + 1, firstClose))));
@@ -323,7 +324,7 @@ public class InlineParser {
 						break;
 					} else {
 						inlines.add(Block.makeBlock(
-								"Str",
+								TAG.STR,
 								new StringContent(_subject.substring(
 										_pos - res.getNumDelims(), _pos))));
 						firstClose = inlines.size() - 1;
@@ -464,7 +465,7 @@ public class InlineParser {
 					}
 
 					if (spnl() && match("^\\)") != null) {
-						inlines.add(Block.makeBlock("Link", dest, title,
+						inlines.add(Block.makeBlock(TAG.LINK, dest, title,
 								parseRawLabel(rawLabel)));
 						return _pos - startPos;
 					} else {
@@ -517,7 +518,7 @@ public class InlineParser {
 				destination = "";
 			}
 
-			inlines.add(Block.makeBlock("Link", destination, title,
+			inlines.add(Block.makeBlock(TAG.LINK, destination, title,
 					parseRawLabel(rawLabel)));
 			return _pos - startPos;
 		} else {
@@ -532,7 +533,7 @@ public class InlineParser {
 				"^&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});",
 				Pattern.CASE_INSENSITIVE);
 		if (m != null) {
-			inlines.add(Block.makeBlock("Entity", new StringContent(m)));
+			inlines.add(Block.makeBlock(TAG.ENTITY, new StringContent(m)));
 			return m.length();
 		} else {
 			return 0;
@@ -542,7 +543,7 @@ public class InlineParser {
 	public int parseString(ArrayList<Block> inlines) {
 		String m = match(RegexPattern.main_LITERAL, Pattern.MULTILINE);
 		if (m != null) {
-			inlines.add(Block.makeBlock("Str", new StringContent(m)));
+			inlines.add(Block.makeBlock(TAG.STR, new StringContent(m)));
 			return m.length();
 		} else {
 			return 0;
@@ -554,23 +555,23 @@ public class InlineParser {
 			_pos++;
 			Block last = inlines.get(inlines.size() - 1);
 			// Logic Modified
-			if (last != null && last.getTag().equals("Str")) {
+			if (last != null && last.getTag() == TAG.STR) {
 				String content = ((StringContent) last.getC()).getContent();
 				if (content.length() >= 2
 						&& content.substring(content.length() - 2).equals("  ")) {
 					String replaceTo = content.replaceAll(" *$", "");
 					last.setC(new StringContent(replaceTo));
-					inlines.add(Block.makeBlock("Hardbreak"));
+					inlines.add(Block.makeBlock(TAG.HARDBREAK));
 				} else if (content.length() >= 1
 						&& content.substring(content.length() - 1).equals(" ")) {
 					last.setC(new StringContent(content.substring(0,
 							content.length() - 1)));
-					inlines.add(Block.makeBlock("Softbreak"));
+					inlines.add(Block.makeBlock(TAG.SOFTBREAK));
 				} else {
-					inlines.add(Block.makeBlock("Softbreak"));
+					inlines.add(Block.makeBlock(TAG.SOFTBREAK));
 				}
 			} else {
-				inlines.add(Block.makeBlock("Softbreak"));
+				inlines.add(Block.makeBlock(TAG.SOFTBREAK));
 			}
 			return 1;
 		} else {
@@ -582,12 +583,12 @@ public class InlineParser {
 		if (match("^!") != null) {
 			int n = parseLink(inlines);
 			if (n == 0) {
-				inlines.add(Block.makeBlock("Str", new StringContent("!")));
+				inlines.add(Block.makeBlock(TAG.STR, new StringContent("!")));
 				return 1;
 				// TODO: Need help
 			} else if (inlines.get(inlines.size() - 1) != null
-					&& inlines.get(inlines.size() - 1).getTag().equals("Link")) {
-				inlines.get(inlines.size() - 1).setTag("Image");
+					&& inlines.get(inlines.size() - 1).getTag() == TAG.LINK) {
+				inlines.get(inlines.size() - 1).setTag(TAG.IMAGE);
 				return n + 1;
 			} else {
 				throw new RuntimeException("Shouldn't happen");

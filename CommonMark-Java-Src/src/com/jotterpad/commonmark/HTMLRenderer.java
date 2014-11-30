@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import com.jotterpad.commonmark.library.CollectionUtils;
 import com.jotterpad.commonmark.library.URLEscape;
 import com.jotterpad.commonmark.object.Block;
+import com.jotterpad.commonmark.object.Block.TAG;
 import com.jotterpad.commonmark.object.BlocksContent;
 import com.jotterpad.commonmark.object.StringContent;
 
@@ -146,37 +147,37 @@ public class HTMLRenderer {
 		if (inline.getC() instanceof StringContent) {
 			content = ((StringContent) inline.getC()).getContent();
 		}
-		if (inline.getTag().equalsIgnoreCase("Str"))
+		if (inline.getTag() == TAG.STR)
 			return escape(content);
-		else if (inline.getTag().equalsIgnoreCase("Softbreak"))
+		else if (inline.getTag() == TAG.SOFTBREAK)
 			return NEWLINE;
-		else if (inline.getTag().equalsIgnoreCase("Hardbreak"))
+		else if (inline.getTag() == TAG.HARDBREAK)
 			return HTMLRenderer.inTags("br", new ArrayList<String[]>(), NONE,
 					true) + NEWLINE;
-		else if (inline.getTag().equalsIgnoreCase("Emph"))
+		else if (inline.getTag() == TAG.EMPH)
 			return HTMLRenderer
 					.inTags("em", new ArrayList<String[]>(),
 							renderInlines(((BlocksContent) inline.getC())
 									.getContents()));
-		else if (inline.getTag().equalsIgnoreCase("Strong"))
+		else if (inline.getTag() == TAG.STRONG)
 			return HTMLRenderer
 					.inTags("strong", new ArrayList<String[]>(),
 							renderInlines(((BlocksContent) inline.getC())
 									.getContents()));
-		else if (inline.getTag().equalsIgnoreCase("Html"))
+		else if (inline.getTag() == TAG.HTML)
 			return content;
-		else if (inline.getTag().equalsIgnoreCase("Entity")) {
+		else if (inline.getTag() == TAG.ENTITY) {
 			if (((StringContent) inline.getC()).getContent().equals("&nbsp;"))
 				return " ";
 			return escape(content, true);
-		} else if (inline.getTag().equalsIgnoreCase("Link")) {
+		} else if (inline.getTag() == TAG.LINK) {
 			attrs.add(new String[] { "href", URLescape(inline.getDestination()) });
 			if (!inline.getTitle().isEmpty() && !inline.getTitle().equals(NONE))
 				attrs.add(new String[] { "title",
 						escape(inline.getTitle(), true) });
 			return HTMLRenderer.inTags("a", attrs,
 					renderInlines(inline.getLabels()));
-		} else if (inline.getTag().equalsIgnoreCase("Image")) {
+		} else if (inline.getTag() == TAG.IMAGE) {
 			attrs.add(new String[] { "src",
 					escape(inline.getDestination(), true) });
 			attrs.add(new String[] { "alt",
@@ -186,7 +187,7 @@ public class HTMLRenderer {
 				attrs.add(new String[] { "title",
 						escape(inline.getTitle(), true) });
 			return inTags("img", attrs, NONE, true);
-		} else if (inline.getTag().equalsIgnoreCase("Code"))
+		} else if (inline.getTag() == TAG.CODE)
 			return inTags("code", new ArrayList<String[]>(), escape(content));
 		else {
 			System.out.print("Unknown inline type " + inline.getTag() + "\n");
@@ -205,29 +206,29 @@ public class HTMLRenderer {
 		String tag;
 		ArrayList<String[]> attr = new ArrayList<String[]>();
 		String[] info_words = new String[0];
-		if (block.getTag().equalsIgnoreCase("Document")) {
+		if (block.getTag() == TAG.DOCUMENT) {
 			String wholeDoc = renderBlocks(block.getChildren());
 			if (wholeDoc.equals(NONE))
 				return NONE;
 			else
 				return wholeDoc + NEWLINE;
-		} else if (block.getTag().equalsIgnoreCase("Paragraph")) {
+		} else if (block.getTag() == TAG.PARAGRAPH) {
 			if (inTightList)
 				return renderInlines(block.getInlineContent());
 			else
 				return inTags("p", new ArrayList<String[]>(),
 						renderInlines(block.getInlineContent()));
-		} else if (block.getTag().equalsIgnoreCase("BlockQuote")) {
+		} else if (block.getTag() == TAG.BLOCKQUOTE) {
 			String filling = renderBlocks(block.getChildren());
 			String a = NEWLINE;
 			if (!filling.isEmpty()) {
 				a = NEWLINE + renderBlocks(block.getChildren()) + NEWLINE;
 			}
 			return inTags("blockquote", new ArrayList<String[]>(), a);
-		} else if (block.getTag().equalsIgnoreCase("ListItem"))
+		} else if (block.getTag() == TAG.LISTITEM)
 			return inTags("li", new ArrayList<String[]>(),
 					renderBlocks(block.getChildren(), inTightList).trim());
-		else if (block.getTag().equalsIgnoreCase("List")) {
+		else if (block.getTag() == TAG.LIST) {
 			if (block.getListData().getType().equalsIgnoreCase("Bullet"))
 				tag = "ul";
 			else
@@ -246,16 +247,16 @@ public class HTMLRenderer {
 					NEWLINE
 							+ renderBlocks(block.getChildren(), block.isTight())
 							+ NEWLINE);
-		} else if (block.getTag().equalsIgnoreCase("ATXHeader")
-				|| block.getTag().equalsIgnoreCase("SetextHeader")) {
+		} else if (block.getTag() == TAG.ATXHEADER
+				|| block.getTag() == TAG.SETEXTHEADER) {
 			tag = "h" + String.valueOf(block.getLevel());
 			return inTags(tag, new ArrayList<String[]>(),
 					renderInlines(block.getInlineContent()));
-		} else if (block.getTag().equalsIgnoreCase("IndentedCode"))
+		} else if (block.getTag() == TAG.INDENTEDCODE)
 			return HTMLRenderer.inTags("pre", new ArrayList<String[]>(),
 					HTMLRenderer.inTags("code", new ArrayList<String[]>(),
 							escape(block.getStringContent())));
-		else if (block.getTag().equalsIgnoreCase("FencedCode")) {
+		else if (block.getTag() == TAG.FENCEDCODE) {
 			if (block.getInfo() != null)
 				info_words = block.getInfo().split(" +"); // TODO: test regex
 															// split pattern
@@ -267,11 +268,11 @@ public class HTMLRenderer {
 			}
 			return inTags("pre", new ArrayList<String[]>(),
 					inTags("code", attr, escape(block.getStringContent())));
-		} else if (block.getTag().equalsIgnoreCase("HtmlBlock"))
+		} else if (block.getTag() == TAG.HTMLBLOCK)
 			return block.getStringContent();
-		else if (block.getTag().equalsIgnoreCase("ReferenceDef"))
+		else if (block.getTag() == TAG.REFERENCEDEF)
 			return NONE;
-		else if (block.getTag().equalsIgnoreCase("HorizontalRule"))
+		else if (block.getTag() == TAG.HORIZONTALRULE)
 			return inTags("hr", new ArrayList<String[]>(), NONE, true);
 		else {
 			System.out.print("Unknown block type " + block.getTag());
@@ -282,7 +283,7 @@ public class HTMLRenderer {
 	public String renderBlocks(ArrayList<Block> blocks, boolean inTightList) {
 		ArrayList<String> result = new ArrayList<String>();
 		for (Block block : blocks) {
-			if (!block.getTag().equalsIgnoreCase("ReferenceDef")) {
+			if (block.getTag() != TAG.REFERENCEDEF) {
 				result.add(renderBlock(block, inTightList));
 			}
 		}

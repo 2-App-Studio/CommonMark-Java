@@ -1,10 +1,5 @@
 package com.jotterpad.commonmark;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.jotterpad.commonmark.object.Block;
 import com.jotterpad.commonmark.object.BlocksContent;
 import com.jotterpad.commonmark.object.Delim;
@@ -12,20 +7,31 @@ import com.jotterpad.commonmark.object.RefMapItem;
 import com.jotterpad.commonmark.object.StringContent;
 import com.jotterpad.commonmark.pattern.RegexPattern;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class InlineParser {
 
 	private String _subject;
 	private int _labelNestLevel, _pos;
 	private HashMap<String, RefMapItem> _refMap;
 	private RegexPattern _regex;
+    private boolean _carriageReturnToBreak;
 
-	public InlineParser() {
+	public InlineParser(boolean carriageReturnToBreak) {
 		_subject = "";
 		_labelNestLevel = 0;
 		_pos = 0;
 		_refMap = new HashMap<String, RefMapItem>();
 		_regex = RegexPattern.getInstance();
-	}
+        _carriageReturnToBreak = carriageReturnToBreak;
+    }
+
+    public void setCarriageReturnToBreak(boolean carriageReturnToBreak) {
+        _carriageReturnToBreak = carriageReturnToBreak;
+    }
 
 	/**
 	 *
@@ -432,7 +438,7 @@ public class InlineParser {
 	}
 
 	public ArrayList<Block> parseRawLabel(String s) {
-		return new InlineParser().parse(s.substring(1, s.length() - 1));
+		return new InlineParser(_carriageReturnToBreak).parse(s.substring(1, s.length() - 1));
 	}
 
 	public int parseLink(ArrayList<Block> inlines) {
@@ -565,10 +571,17 @@ public class InlineParser {
 						&& content.substring(content.length() - 1).equals(" ")) {
 					last.setC(new StringContent(content.substring(0,
 							content.length() - 1)));
-					inlines.add(Block.makeBlock("Softbreak"));
-				} else {
-					inlines.add(Block.makeBlock("Softbreak"));
-				}
+                    if (_carriageReturnToBreak)
+                        inlines.add(Block.makeBlock("Hardbreak")); // Edited
+                    else
+                        inlines.add(Block.makeBlock("Softbreak")); // Edited
+
+                } else {
+                    if (_carriageReturnToBreak)
+                        inlines.add(Block.makeBlock("Hardbreak")); // Edited
+                    else
+                        inlines.add(Block.makeBlock("Softbreak")); // Edited
+                }
 			} else {
 				inlines.add(Block.makeBlock("Softbreak"));
 			}

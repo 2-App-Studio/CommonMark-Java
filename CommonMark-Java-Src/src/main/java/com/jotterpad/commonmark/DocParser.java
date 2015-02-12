@@ -1,10 +1,5 @@
 package com.jotterpad.commonmark;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.jotterpad.commonmark.library.CollectionUtils;
 import com.jotterpad.commonmark.object.Block;
 import com.jotterpad.commonmark.object.ListData;
@@ -12,6 +7,11 @@ import com.jotterpad.commonmark.object.OrderedListData;
 import com.jotterpad.commonmark.object.RefMapItem;
 import com.jotterpad.commonmark.object.UnorderedListData;
 import com.jotterpad.commonmark.pattern.RegexPattern;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DocParser {
 
@@ -21,23 +21,27 @@ public class DocParser {
 	private HashMap<String, RefMapItem> _refMap;
 	private InlineParser _inlineParser;
 
-	public DocParser(String subject, int pos) {
+	public DocParser(String subject, int pos, boolean carriageReturnToBreak) {
 		_doc = Block.makeBlock("Document", 1, 1);
 		_subject = subject;
 		_pos = pos;
 		_tip = Block.makeBlock("Document", 1, 1);
 		_refMap = new HashMap<String, RefMapItem>();
-		_inlineParser = new InlineParser();
+		_inlineParser = new InlineParser(carriageReturnToBreak);
 	}
 
-	public DocParser() {
+	public DocParser(boolean carriageReturnToBreak) {
 		_doc = Block.makeBlock("Document", 1, 1);
 		_subject = null;
 		_pos = 0;
 		_tip = Block.makeBlock("Document", 1, 1);
 		_refMap = new HashMap<String, RefMapItem>();
-		_inlineParser = new InlineParser();
+		_inlineParser = new InlineParser(carriageReturnToBreak);
 	}
+
+    public void setCarriageReturnToBreak(boolean carriageReturnToBreak) {
+        _inlineParser.setCarriageReturnToBreak(carriageReturnToBreak);
+    }
 
 	private boolean acceptsLine(String blockType) {
 		return blockType.equals("Paragraph")
@@ -473,8 +477,6 @@ public class DocParser {
 			finalize(oldTip, lineNumber);
 			oldTip = oldTip.getParent();
 		}
-		alreadyDone = true;
-
 	}
 
 	private void finalize(Block block, int lineNumber) {

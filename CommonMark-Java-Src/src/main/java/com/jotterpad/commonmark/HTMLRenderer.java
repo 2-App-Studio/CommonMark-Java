@@ -171,7 +171,8 @@ public class HTMLRenderer {
 			return escape(content, true);
 		} else if (inline.getTag().equalsIgnoreCase("Link")) {
 			attrs.add(new String[] { "href", URLescape(inline.getDestination()) });
-			if (!inline.getTitle().isEmpty() && !inline.getTitle().equals(NONE))
+			if (inline.getTitle() != null &&
+                    !inline.getTitle().isEmpty() && !inline.getTitle().equals(NONE))
 				attrs.add(new String[] { "title",
 						escape(inline.getTitle(), true) });
 			return HTMLRenderer.inTags("a", attrs,
